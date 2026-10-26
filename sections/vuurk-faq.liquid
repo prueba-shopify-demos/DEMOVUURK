@@ -1,0 +1,74 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--dark" aria-labelledby="VkFaqTitle-{{ section.id }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk-faq__grid">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 id="VkFaqTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+          {{- section.settings.title -}}
+        </h2>
+        {%- if section.settings.button_label != blank -%}
+          <div class="vk__actions vk-reveal" style="--vk-delay: 0.14s">
+            <a class="vk-btn" href="{{ section.settings.button_link | default: '#comprar' }}">
+              {{- section.settings.button_label | escape -}}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="vk-reveal" style="--vk-delay: 0.1s">
+        {%- for block in section.blocks -%}
+          <details class="vk-faq__item" {{ block.shopify_attributes }} {% if forloop.first and section.settings.open_first %}open{% endif %}>
+            <summary>
+              {{- block.settings.question | escape -}}
+              <span class="vk-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="vk-faq__answer">{{ block.settings.answer }}</div>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Preguntas",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Preguntas frecuentes" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Antes de comprar." },
+    { "type": "checkbox", "id": "open_first", "label": "Abrir la primera pregunta", "default": true },
+    { "type": "text", "id": "button_label", "label": "Botón", "default": "Comprar VUURK" },
+    { "type": "text", "id": "button_link", "label": "Enlace del botón", "default": "#comprar" }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Pregunta",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Pregunta", "default": "Pregunta" },
+        { "type": "richtext", "id": "answer", "label": "Respuesta", "default": "<p>Información pendiente de confirmación por VUURK.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "VUURK · Preguntas",
+      "blocks": [
+        { "type": "question", "settings": { "question": "¿Qué es VUURK?", "answer": "<p>Gummies energéticas de la línea Energía + Enfoque, en doypack.</p>" } },
+        { "type": "question", "settings": { "question": "¿Cuánta cafeína contiene?" } },
+        { "type": "question", "settings": { "question": "¿Cuántas gummies trae cada doypack?" } },
+        { "type": "question", "settings": { "question": "¿Cómo se toman?" } },
+        { "type": "question", "settings": { "question": "¿A dónde hacen envíos?" } },
+        { "type": "question", "settings": { "question": "¿Qué medios de pago aceptan?" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

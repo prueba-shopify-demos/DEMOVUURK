@@ -1,0 +1,96 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--dark" aria-labelledby="VkFeatTitle-{{ section.id }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 id="VkFeatTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+        {{- section.settings.title -}}
+      </h2>
+    </div>
+
+    <div class="vk-feat__grid">
+      {%- for block in section.blocks -%}
+        <article class="vk-card vk-reveal" style="--vk-delay: {{ forloop.index0 | times: 0.08 }}s" {{ block.shopify_attributes }}>
+          <span class="vk-card__icon" aria-hidden="true">
+            {%- case block.settings.icon -%}
+              {%- when 'gummy' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 4c-2.5 0-4 2-4 4.5 0 1.8 1 3 1 4.5S4 15.7 4 17c0 2 1.6 3 3.5 3h9c1.9 0 3.5-1 3.5-3 0-1.3-1-2.5-1-4s1-2.7 1-4.5C20 6 18.5 4 16 4c-1.6 0-2.6 1-4 1s-2.4-1-4-1Z"/><circle cx="9.5" cy="10" r="1" fill="currentColor"/><circle cx="14.5" cy="10" r="1" fill="currentColor"/></svg>
+              {%- when 'pouch' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12l-1 4 1.5 12a2 2 0 0 1-2 2.2h-9A2 2 0 0 1 5.5 19L7 7 6 3Z"/><path d="M7 7h10" stroke-linecap="round"/></svg>
+              {%- when 'bolt' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+              {%- when 'lock' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              {%- else -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>
+            {%- endcase -%}
+          </span>
+          <h3 class="vk__h3">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.text != blank -%}
+            <p class="vk-card__text">{{ block.settings.text | escape }}</p>
+          {%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.note != blank -%}
+      <p class="vk-note">{{ section.settings.note | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Características",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Características verificadas" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Lo que ves es lo que hay." },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Nota",
+      "default": "Solo se muestran datos visibles en el envase o propios de la tienda. La ficha técnica se añadirá cuando VUURK la confirme."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Característica",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icono",
+          "options": [
+            { "value": "gummy", "label": "Gummy" },
+            { "value": "pouch", "label": "Doypack" },
+            { "value": "bolt", "label": "Energía" },
+            { "value": "lock", "label": "Compra segura" },
+            { "value": "check", "label": "Check" }
+          ],
+          "default": "check"
+        },
+        { "type": "text", "id": "title", "label": "Título", "default": "Característica" },
+        { "type": "text", "id": "text", "label": "Texto" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "VUURK · Características",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "gummy", "title": "Formato gummy", "text": "Producto en formato gummy." } },
+        { "type": "feature", "settings": { "icon": "pouch", "title": "Doypack con zipper", "text": "Envase flexible con cierre zipper en la parte superior." } },
+        { "type": "feature", "settings": { "icon": "bolt", "title": "Energía + Enfoque", "text": "La línea impresa en el frente del envase." } },
+        { "type": "feature", "settings": { "icon": "lock", "title": "Checkout de Shopify", "text": "Pago y pedido con el checkout nativo de Shopify." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

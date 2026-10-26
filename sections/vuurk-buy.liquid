@@ -1,0 +1,219 @@
+{%- liquid
+  assign product = section.settings.product
+  if product != blank
+    assign variant = product.selected_or_first_available_variant
+    assign qty_max = ''
+    if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.inventory_quantity > 0
+      assign qty_max = variant.inventory_quantity
+    endif
+  endif
+-%}
+{% render 'vuurk-assets' %}
+
+<section id="comprar" class="vk vk--cream vk-buy" aria-labelledby="VkBuyTitle-{{ section.id }}" data-vk-buy>
+  <div class="vk__wrap vk__pad">
+    <div class="vk-buy__grid">
+      <div class="vk-buy__media vk-reveal">
+        {% render 'vuurk-pack',
+          image: section.settings.image,
+          fallback: 'vuurk-pack-hero.webp',
+          fallback_width: 820,
+          fallback_height: 1136,
+          fallback_small: 'vuurk-pack-hero-560.webp',
+          fallback_small_width: 560,
+          alt: section.settings.image_alt,
+          sizes: '(min-width: 900px) 40vw, 80vw'
+        %}
+      </div>
+
+      <div class="vk-buy__panel">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 id="VkBuyTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+          {%- if product != blank -%}
+            {{- product.title | escape -}}
+          {%- else -%}
+            {{- section.settings.title | escape -}}
+          {%- endif -%}
+        </h2>
+        {%- if section.settings.text != blank -%}
+          <div class="vk__lead vk-reveal" style="--vk-delay: 0.12s">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if product != blank -%}
+          <div class="vk-reveal" style="--vk-delay: 0.16s">
+            <p class="vk-buy__price">
+              <span data-vk-price>{{ variant.price | money }}</span>
+              <span class="vk-buy__compare" data-vk-compare {% unless variant.compare_at_price > variant.price %}hidden{% endunless %}>
+                {%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}
+              </span>
+            </p>
+            {%- if variant.unit_price_measurement -%}
+              <p class="vk-buy__tax">
+                {{ variant.unit_price | money }}/{{ variant.unit_price_measurement.reference_value }}{{ variant.unit_price_measurement.reference_unit }}
+              </p>
+            {%- endif -%}
+            <p
+              class="vk-buy__stock{% unless variant.available %} vk-buy__stock--out{% endunless %}"
+              data-vk-stock
+              data-in-stock="{{ section.settings.in_stock_label | escape }}"
+              data-out-stock="{{ section.settings.sold_out_label | escape }}"
+            >
+              {%- if variant.available -%}
+                {{ section.settings.in_stock_label | escape }}
+              {%- else -%}
+                {{ section.settings.sold_out_label | escape }}
+              {%- endif -%}
+            </p>
+
+            {%- form 'product', product, class: 'vk-buy__form', novalidate: 'novalidate' -%}
+              {%- if product.has_only_default_variant -%}
+                <input type="hidden" name="id" value="{{ variant.id }}">
+              {%- else -%}
+                <div class="vk-field">
+                  <label for="VkVariant-{{ section.id }}">{{ section.settings.variant_label | escape }}</label>
+                  <select id="VkVariant-{{ section.id }}" name="id" class="vk-select" data-vk-variant>
+                    {%- for v in product.variants -%}
+                      <option value="{{ v.id }}" {% if v.id == variant.id %}selected{% endif %}>
+                        {{- v.title | escape }}{% unless v.available %} · {{ section.settings.sold_out_label | escape }}{% endunless -%}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                </div>
+                <script type="application/json" data-vk-variants>
+                  [
+                    {%- for v in product.variants -%}
+                      {
+                        "id": {{ v.id | json }},
+                        "available": {{ v.available | json }},
+                        "price": {{ v.price | money | json }},
+                        "compare": {% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | json }}{% else %}""{% endif %}
+                      }{% unless forloop.last %},{% endunless %}
+                    {%- endfor -%}
+                  ]
+                </script>
+              {%- endif -%}
+
+              <div class="vk-buy__row">
+                <div class="vk-field">
+                  <label for="VkQty-{{ section.id }}">{{ section.settings.quantity_label | escape }}</label>
+                  <div class="vk-qty">
+                    <button type="button" data-vk-qty="-1" aria-label="−1">−</button>
+                    <input
+                      id="VkQty-{{ section.id }}"
+                      type="number"
+                      name="quantity"
+                      value="1"
+                      min="1"
+                      {% if qty_max != '' %}max="{{ qty_max }}"{% endif %}
+                      inputmode="numeric"
+                      data-vk-qty-input
+                    >
+                    <button type="button" data-vk-qty="1" aria-label="+1">+</button>
+                  </div>
+                </div>
+                <div class="vk-field">
+                  <label aria-hidden="true">&nbsp;</label>
+                  <button
+                    type="submit"
+                    name="add"
+                    class="vk-btn vk-btn--dark vk-btn--block"
+                    data-vk-submit
+                    data-label="{{ section.settings.button_label | escape }}"
+                    data-sold-out="{{ section.settings.sold_out_label | escape }}"
+                    {% unless variant.available %}disabled{% endunless %}
+                  >
+                    <span>
+                      {%- if variant.available -%}
+                        {{ section.settings.button_label | escape }}
+                      {%- else -%}
+                        {{ section.settings.sold_out_label | escape }}
+                      {%- endif -%}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {%- if section.settings.show_dynamic_checkout -%}
+                <div class="vk-buy__dynamic">{{ form | payment_button }}</div>
+              {%- endif -%}
+            {%- endform -%}
+          </div>
+        {%- else -%}
+          <div class="vk-buy__form vk-reveal" style="--vk-delay: 0.16s">
+            <button type="button" class="vk-btn vk-btn--dark vk-btn--block" disabled>
+              <span>{{ section.settings.unavailable_label | escape }}</span>
+            </button>
+          </div>
+          {%- if request.design_mode -%}
+            <p class="vk-admin-note">
+              Solo visible en el editor: selecciona el producto VUURK en esta sección. El precio, el inventario, la cantidad y el botón de compra se toman de Shopify; no se muestra ningún precio hasta entonces.
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+
+        <ul class="vk-buy__trust vk-reveal" style="--vk-delay: 0.22s">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m4 10.5 4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {{ block.settings.text | escape }}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Compra",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Producto VUURK" },
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Comprar" },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título si no hay producto",
+      "default": "VUURK Energy Gummies"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Doypack VUURK Energía + Enfoque.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Render del envase (fondo transparente)",
+      "info": "Si se deja vacío se usa el render incluido en el theme."
+    },
+    { "type": "text", "id": "image_alt", "label": "Texto alternativo", "default": "Doypack VUURK Energy Gummies" },
+    { "type": "text", "id": "button_label", "label": "Botón", "default": "Agregar al carrito" },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Mostrar botón de pago rápido", "default": true },
+    { "type": "text", "id": "variant_label", "label": "Etiqueta de variante", "default": "Presentación" },
+    { "type": "text", "id": "quantity_label", "label": "Etiqueta de cantidad", "default": "Cantidad" },
+    { "type": "text", "id": "in_stock_label", "label": "Texto disponible", "default": "Disponible" },
+    { "type": "text", "id": "sold_out_label", "label": "Texto agotado", "default": "Agotado" },
+    { "type": "text", "id": "unavailable_label", "label": "Botón sin producto", "default": "Disponible pronto" }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Garantía de compra",
+      "settings": [{ "type": "text", "id": "text", "label": "Texto", "default": "Checkout seguro de Shopify" }]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "VUURK · Compra",
+      "blocks": [{ "type": "trust", "settings": { "text": "Checkout seguro de Shopify" } }]
+    }
+  ]
+}
+{% endschema %}

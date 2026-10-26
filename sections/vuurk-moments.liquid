@@ -1,0 +1,60 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--cream" aria-labelledby="VkMomentsTitle-{{ section.id }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 id="VkMomentsTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+        {{- section.settings.title -}}
+      </h2>
+    </div>
+
+    <div class="vk-moments__grid">
+      {%- for block in section.blocks -%}
+        <article class="vk-moment vk-reveal" style="--vk-delay: {{ forloop.index0 | times: 0.08 }}s" {{ block.shopify_attributes }}>
+          <span class="vk-card__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <h3 class="vk__h3">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.text != blank -%}
+            <p class="vk-card__text">{{ block.settings.text | escape }}</p>
+          {%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Momentos",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Situaciones de uso" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Hecho para tu día." }
+  ],
+  "blocks": [
+    {
+      "type": "moment",
+      "name": "Momento",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "Momento" },
+        { "type": "text", "id": "text", "label": "Texto" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "VUURK · Momentos",
+      "blocks": [
+        { "type": "moment", "settings": { "title": "Entrenamiento", "text": "En la mochila del gimnasio o de la salida a correr." } },
+        { "type": "moment", "settings": { "title": "Estudio", "text": "Sobre el escritorio, junto a los apuntes." } },
+        { "type": "moment", "settings": { "title": "Trabajo", "text": "Para la jornada, entre reunión y reunión." } },
+        { "type": "moment", "settings": { "title": "En movimiento", "text": "El doypack con zipper viaja contigo." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

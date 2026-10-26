@@ -1,0 +1,88 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--cream" aria-labelledby="VkIntroTitle-{{ section.id }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk-intro__grid">
+      <div class="vk-intro__media vk-reveal">
+        <span class="vk-intro__disc" aria-hidden="true"></span>
+        {% render 'vuurk-pack',
+          image: section.settings.image,
+          fallback: 'vuurk-pack-34.webp',
+          fallback_width: 409,
+          fallback_height: 569,
+          alt: section.settings.image_alt,
+          sizes: '(min-width: 900px) 34vw, 70vw'
+        %}
+      </div>
+
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 id="VkIntroTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+          {{- section.settings.title -}}
+        </h2>
+        {%- if section.settings.text != blank -%}
+          <div class="vk__lead vk-reveal" style="--vk-delay: 0.14s">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="vk-specs vk-reveal" style="--vk-delay: 0.2s">
+            {%- for block in section.blocks -%}
+              <li {{ block.shopify_attributes }}>
+                <div class="vk-specs__k">{{ block.settings.label | escape }}</div>
+                <div class="vk-specs__v">{{ block.settings.value | escape }}</div>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Presentación",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "El producto" },
+    { "type": "text", "id": "title", "label": "Título", "default": "VUURK Energy Gummies." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Gummies energéticas de la línea Energía + Enfoque, presentadas en un doypack negro, naranja y crema con cierre zipper.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Render del envase (fondo transparente)",
+      "info": "Si se deja vacío se usa la perspectiva 3/4 incluida en el theme."
+    },
+    { "type": "text", "id": "image_alt", "label": "Texto alternativo", "default": "Doypack VUURK en perspectiva 3/4" }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Dato",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Formato" },
+        { "type": "text", "id": "value", "label": "Valor", "default": "Gummies" }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "VUURK · Presentación",
+      "blocks": [
+        { "type": "spec", "settings": { "label": "Formato", "value": "Gummies" } },
+        { "type": "spec", "settings": { "label": "Envase", "value": "Doypack" } },
+        { "type": "spec", "settings": { "label": "Línea", "value": "Energía + Enfoque" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

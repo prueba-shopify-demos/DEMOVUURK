@@ -1,0 +1,134 @@
+{%- assign product = section.settings.product -%}
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--dark vk-hero" aria-labelledby="VkHeroTitle-{{ section.id }}">
+  <div class="vk-hero__bg" aria-hidden="true">
+    <span class="vk-hero__glow"></span>
+    <span class="vk-hero__shape vk-hero__shape--a"></span>
+    <span class="vk-hero__shape vk-hero__shape--b"></span>
+    <span class="vk-hero__lines"></span>
+  </div>
+
+  <div class="vk__wrap">
+    <div class="vk-hero__grid">
+      <div class="vk-hero__copy">
+        <div class="vk-hero__top">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <h1 id="VkHeroTitle-{{ section.id }}" class="vk__h1 vk-reveal" style="--vk-delay: 0.08s">
+            {{- section.settings.title_line_1 }}
+            {%- if section.settings.title_line_2 != blank -%}
+              <br><span class="vk-hero__plus">{{ section.settings.title_line_2 }}</span>
+            {%- endif -%}
+          </h1>
+        </div>
+
+        <div class="vk-hero__bottom">
+          {%- if section.settings.text != blank -%}
+            <div class="vk__lead vk-reveal" style="--vk-delay: 0.16s">{{ section.settings.text }}</div>
+          {%- endif -%}
+
+          {%- if section.settings.show_price and product != blank -%}
+            <p class="vk-hero__price vk-reveal" style="--vk-delay: 0.2s">
+              {{ product.selected_or_first_available_variant.price | money }}
+            </p>
+          {%- endif -%}
+
+          <div class="vk__actions vk-reveal" style="--vk-delay: 0.24s">
+            {%- if section.settings.button_label != blank -%}
+              <a class="vk-btn" href="{{ section.settings.button_link | default: '#comprar' }}">
+                {{ section.settings.button_label | escape }}
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11m-4-5 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            {%- endif -%}
+            {%- if section.settings.button_2_label != blank -%}
+              <a class="vk-btn vk-btn--ghost" href="{{ section.settings.button_2_link | default: '#envase' }}">
+                {{- section.settings.button_2_label | escape -}}
+              </a>
+            {%- endif -%}
+          </div>
+
+          {%- if section.blocks.size > 0 -%}
+            <ul class="vk-chips vk-reveal" style="--vk-delay: 0.32s">
+              {%- for block in section.blocks -%}
+                <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="vk-hero__media" data-vk-tilt>
+        <div class="vk-hero__tilt">
+          {% render 'vuurk-pack',
+            image: section.settings.image,
+            fallback: 'vuurk-pack-hero.webp',
+            fallback_width: 820,
+            fallback_height: 1136,
+            fallback_small: 'vuurk-pack-hero-560.webp',
+            fallback_small_width: 560,
+            alt: section.settings.image_alt,
+            sizes: '(min-width: 900px) 40vw, 70vw',
+            eager: true
+          %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Hero",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "VUURK Energy Gummies" },
+    { "type": "text", "id": "title_line_1", "label": "Titular, línea 1", "default": "Energía" },
+    { "type": "text", "id": "title_line_2", "label": "Titular, línea 2 (naranja)", "default": "+ Enfoque." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Gummies energéticas en doypack, con el diseño negro y naranja de VUURK.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Render del envase (PNG/WebP con fondo transparente)",
+      "info": "Si se deja vacío se usa el render incluido en el theme."
+    },
+    { "type": "text", "id": "image_alt", "label": "Texto alternativo", "default": "Doypack VUURK Energy Gummies, diseño negro, naranja y crema" },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Producto",
+      "info": "Producto VUURK de Shopify. El precio solo se muestra cuando está seleccionado."
+    },
+    { "type": "checkbox", "id": "show_price", "label": "Mostrar precio real del producto", "default": true },
+    { "type": "text", "id": "button_label", "label": "Botón principal", "default": "Comprar VUURK" },
+    { "type": "text", "id": "button_link", "label": "Enlace del botón principal", "default": "#comprar" },
+    { "type": "text", "id": "button_2_label", "label": "Botón secundario", "default": "Ver el envase" },
+    { "type": "text", "id": "button_2_link", "label": "Enlace del botón secundario", "default": "#envase" }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Etiqueta",
+      "settings": [{ "type": "text", "id": "text", "label": "Texto", "default": "Gummies" }]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "VUURK · Hero",
+      "blocks": [
+        { "type": "chip", "settings": { "text": "Gummies" } },
+        { "type": "chip", "settings": { "text": "Doypack con zipper" } },
+        { "type": "chip", "settings": { "text": "Energía + Enfoque" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

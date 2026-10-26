@@ -1,0 +1,6 @@
+{% doc %}
+  Carga los estilos y el script compartidos de la landing VUURK.
+  Cada sección vuurk-* lo incluye; el navegador reutiliza la caché.
+{% enddoc %}
+{{ 'vuurk-landing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'vuurk-landing.js' | asset_url }}" defer></script>

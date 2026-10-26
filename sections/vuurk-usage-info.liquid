@@ -1,0 +1,85 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--dark" aria-labelledby="VkInfoTitle-{{ section.id }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk-info__grid">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 id="VkInfoTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+          {{- section.settings.title -}}
+        </h2>
+        {%- if section.settings.text != blank -%}
+          <div class="vk__lead vk-reveal" style="--vk-delay: 0.14s">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+
+      <ul class="vk-table vk-reveal" style="--vk-delay: 0.12s">
+        {%- for block in section.blocks -%}
+          <li {{ block.shopify_attributes }}>
+            <span class="vk-table__k">{{ block.settings.label | escape }}</span>
+            {%- if block.settings.value != blank -%}
+              <span class="vk-table__v">{{ block.settings.value }}</span>
+            {%- else -%}
+              <span class="vk-table__v vk-table__v--pending">{{ section.settings.pending_text | escape }}</span>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Info de consumo",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Información de consumo" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Datos del producto." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Publicamos solo información confirmada por VUURK. Consulta siempre la etiqueta del envase.</p>"
+    },
+    {
+      "type": "text",
+      "id": "pending_text",
+      "label": "Texto para datos sin confirmar",
+      "default": "Pendiente de confirmación por VUURK"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Dato",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Dato", "default": "Dato" },
+        {
+          "type": "inline_richtext",
+          "id": "value",
+          "label": "Valor confirmado",
+          "info": "Déjalo vacío mientras VUURK no lo confirme."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "VUURK · Info de consumo",
+      "blocks": [
+        { "type": "row", "settings": { "label": "Contenido del envase" } },
+        { "type": "row", "settings": { "label": "Porción" } },
+        { "type": "row", "settings": { "label": "Cafeína por porción" } },
+        { "type": "row", "settings": { "label": "Modo de uso" } },
+        { "type": "row", "settings": { "label": "Ingredientes" } },
+        { "type": "row", "settings": { "label": "Advertencias" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

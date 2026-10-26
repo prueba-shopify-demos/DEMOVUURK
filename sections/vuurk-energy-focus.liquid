@@ -1,0 +1,65 @@
+{% render 'vuurk-assets' %}
+
+<section class="vk vk--orange" aria-label="{{ section.settings.word_1 | escape }} + {{ section.settings.word_2 | escape }}">
+  <div class="vk__wrap vk__pad">
+    <div class="vk-ef__grid">
+      <div class="vk-ef__col vk-ef__col--left vk-reveal">
+        <p class="vk-ef__word">{{ section.settings.word_1 | escape }}</p>
+        {%- if section.settings.text_1 != blank -%}
+          <p class="vk-ef__text">{{ section.settings.text_1 | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="vk-ef__center vk-reveal" style="--vk-delay: 0.1s">
+        <span class="vk-ef__plus" aria-hidden="true">+</span>
+        {% render 'vuurk-pack',
+          image: section.settings.image,
+          fallback: 'vuurk-pack-lateral.webp',
+          fallback_width: 110,
+          fallback_height: 291,
+          alt: section.settings.image_alt,
+          sizes: '(min-width: 900px) 16vw, 96px'
+        %}
+      </div>
+
+      <div class="vk-ef__col vk-ef__col--right vk-reveal" style="--vk-delay: 0.18s">
+        <p class="vk-ef__word">{{ section.settings.word_2 | escape }}</p>
+        {%- if section.settings.text_2 != blank -%}
+          <p class="vk-ef__text">{{ section.settings.text_2 | escape }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VUURK · Energía + Enfoque",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "word_1", "label": "Palabra 1", "default": "Energía" },
+    {
+      "type": "text",
+      "id": "text_1",
+      "label": "Texto 1",
+      "default": "Para los días que piden ritmo: entrenar, estudiar, trabajar o salir de viaje."
+    },
+    { "type": "text", "id": "word_2", "label": "Palabra 2", "default": "Enfoque" },
+    {
+      "type": "text",
+      "id": "text_2",
+      "label": "Texto 2",
+      "default": "Para los momentos en que lo importante necesita tu atención."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Render lateral del envase (fondo transparente)",
+      "info": "Si se deja vacío se usa la vista lateral incluida en el theme."
+    },
+    { "type": "text", "id": "image_alt", "label": "Texto alternativo", "default": "Vista lateral del doypack VUURK" }
+  ],
+  "presets": [{ "name": "VUURK · Energía + Enfoque" }]
+}
+{% endschema %}

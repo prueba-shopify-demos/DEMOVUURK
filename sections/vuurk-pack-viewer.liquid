@@ -1,0 +1,197 @@
+{%- liquid
+  assign product = section.settings.product
+  assign model = nil
+  assign has_model = false
+  if product != blank
+    assign model = product.media | where: 'media_type', 'model' | first
+    if model.media_type == 'model'
+      assign has_model = true
+    endif
+  endif
+-%}
+{% render 'vuurk-assets' %}
+
+<section
+  id="envase"
+  class="vk vk--gray"
+  aria-labelledby="VkViewerTitle-{{ section.id }}"
+  {% unless has_model %}
+    data-vk-viewer
+  {% endunless %}
+>
+  <div class="vk__wrap vk__pad">
+    <div class="vk-viewer__grid">
+      <div class="vk-stage vk-reveal" {% unless has_model %}tabindex="0" aria-roledescription="carrusel" aria-label="{{ section.settings.hint | escape }}"{% endunless %}>
+        <span class="vk-stage__floor" aria-hidden="true"></span>
+
+        {%- if has_model -%}
+          <div class="vk-stage__model" data-vk-model>
+            {{
+              model
+              | model_viewer_tag:
+                image_size: '1200x',
+                reveal: 'auto',
+                camera-controls: true,
+                interaction-prompt: 'auto',
+                auto-rotate: true,
+                shadow-intensity: '1',
+                ar: true
+            }}
+          </div>
+          <span class="vk-stage__hint">{{ section.settings.hint_3d | escape }}</span>
+        {%- else -%}
+          {%- liquid
+            assign label_frontal = section.settings.label_frontal
+            assign label_34 = section.settings.label_34
+            assign label_lateral = section.settings.label_lateral
+          -%}
+          <div class="vk-stage__view is-active" data-vk-view aria-hidden="false">
+            {% render 'vuurk-pack',
+              image: section.settings.image_frontal,
+              fallback: 'vuurk-pack-frontal.webp',
+              fallback_width: 527,
+              fallback_height: 574,
+              alt: label_frontal,
+              sizes: '(min-width: 900px) 40vw, 80vw'
+            %}
+          </div>
+          <div class="vk-stage__view" data-vk-view aria-hidden="true">
+            {% render 'vuurk-pack',
+              image: section.settings.image_34,
+              fallback: 'vuurk-pack-34.webp',
+              fallback_width: 409,
+              fallback_height: 569,
+              alt: label_34,
+              sizes: '(min-width: 900px) 40vw, 80vw'
+            %}
+          </div>
+          <div class="vk-stage__view" data-vk-view aria-hidden="true">
+            {% render 'vuurk-pack',
+              image: section.settings.image_lateral,
+              fallback: 'vuurk-pack-lateral.webp',
+              fallback_width: 110,
+              fallback_height: 291,
+              alt: label_lateral,
+              sizes: '(min-width: 900px) 12vw, 30vw'
+            %}
+          </div>
+          <span class="vk-stage__hint">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 7 3 10l3 3m8-6 3 3-3 3M3 10h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ section.settings.hint | escape }}
+          </span>
+        {%- endif -%}
+      </div>
+
+      <div class="vk-viewer__side">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="vk__eyebrow vk-reveal">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 id="VkViewerTitle-{{ section.id }}" class="vk__h2 vk-reveal" style="--vk-delay: 0.08s">
+          {{- section.settings.title -}}
+        </h2>
+        {%- if section.settings.text != blank -%}
+          <div class="vk__lead vk-reveal" style="--vk-delay: 0.14s">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- unless has_model -%}
+          <div class="vk-tabs vk-reveal" role="tablist" style="--vk-delay: 0.2s; margin-top: 28px">
+            <button type="button" class="vk-tab" role="tab" aria-selected="true" data-vk-view-tab>{{ label_frontal | escape }}</button>
+            <button type="button" class="vk-tab" role="tab" aria-selected="false" data-vk-view-tab>{{ label_34 | escape }}</button>
+            <button type="button" class="vk-tab" role="tab" aria-selected="false" data-vk-view-tab>{{ label_lateral | escape }}</button>
+          </div>
+        {%- endunless -%}
+
+        <figure class="vk-reveal" style="--vk-delay: 0.26s; margin: 0">
+          <div class="vk-viewer__detail">
+            {%- if section.settings.image_detail != blank -%}
+              {{ section.settings.image_detail | image_url: width: 1200 | image_tag: loading: 'lazy', sizes: '(min-width: 900px) 36vw, 90vw', alt: section.settings.detail_caption }}
+            {%- else -%}
+              <img
+                src="{{ 'vuurk-pack-zipper.webp' | asset_url }}"
+                width="662"
+                height="285"
+                loading="lazy"
+                decoding="async"
+                alt="{{ section.settings.detail_caption | escape }}"
+              >
+            {%- endif -%}
+          </div>
+          {%- if section.settings.detail_caption != blank -%}
+            <figcaption class="vk-viewer__caption">{{ section.settings.detail_caption | escape }}</figcaption>
+          {%- endif -%}
+        </figure>
+
+        {%- if request.design_mode and has_model == false -%}
+          <p class="vk-admin-note">
+            Solo visible en el editor: esta sección muestra renders estáticos. Al subir un modelo GLB como medio del producto seleccionado, se activará el visor 3D nativo de Shopify con rotación táctil y con mouse.
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- if has_model -%}
+  <link rel="stylesheet" href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css" media="print" onload="this.media='all'">
+  <script>
+    (() => {
+      const run = () => {
+        if (!window.Shopify || !Shopify.loadFeatures) return;
+        Shopify.loadFeatures([
+          {
+            name: 'model-viewer-ui',
+            version: '1.0',
+            onLoad: (errors) => {
+              if (errors || !Shopify.ModelViewerUI) return;
+              document.querySelectorAll('[data-vk-model] model-viewer').forEach((el) => {
+                if (!el.dataset.vkUi) {
+                  el.dataset.vkUi = 'true';
+                  new Shopify.ModelViewerUI(el);
+                }
+              });
+            },
+          },
+        ]);
+      };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+      else run();
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "VUURK · Envase 3D",
+  "tag": "div",
+  "class": "vk-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "El envase" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Míralo desde cada ángulo." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Doypack negro, naranja y crema con cierre zipper. Desliza o elige una vista para recorrerlo.</p>"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Producto con modelo 3D",
+      "info": "Si el producto tiene un medio de tipo modelo 3D (GLB), se muestra el visor 3D nativo en lugar de los renders."
+    },
+    { "type": "header", "content": "Renders (fondo transparente)" },
+    { "type": "image_picker", "id": "image_frontal", "label": "Vista frontal" },
+    { "type": "text", "id": "label_frontal", "label": "Nombre vista frontal", "default": "Frontal" },
+    { "type": "image_picker", "id": "image_34", "label": "Vista 3/4" },
+    { "type": "text", "id": "label_34", "label": "Nombre vista 3/4", "default": "3/4" },
+    { "type": "image_picker", "id": "image_lateral", "label": "Vista lateral" },
+    { "type": "text", "id": "label_lateral", "label": "Nombre vista lateral", "default": "Lateral" },
+    { "type": "text", "id": "hint", "label": "Indicación de vistas", "default": "Desliza para cambiar de vista" },
+    { "type": "text", "id": "hint_3d", "label": "Indicación del visor 3D", "default": "Arrastra para girar el envase" },
+    { "type": "header", "content": "Detalle" },
+    { "type": "image_picker", "id": "image_detail", "label": "Imagen de detalle" },
+    { "type": "text", "id": "detail_caption", "label": "Pie de foto", "default": "Detalle del cierre zipper." }
+  ],
+  "presets": [{ "name": "VUURK · Envase 3D" }]
+}
+{% endschema %}

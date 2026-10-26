@@ -1,4 +1,4 @@
-# VUURK-DEMO-SHOIFY
+# DEMOVUURK
 
 Theme Shopify de la tienda oficial VUURK (gummies energéticas), tienda de producto único sobre **Shopify Basic** con el theme **Savor**.
 
@@ -23,19 +23,25 @@ Dirección del proyecto: eQuantum Consulting.
 | `snippets/` | Fragmentos Liquid compartidos |
 | `templates/` | Plantillas JSON de cada tipo de página |
 
-## Home VUURK (E02-C)
+## Home VUURK (E02-C3)
 
-La Home usa solo secciones nativas de Savor, configuradas en `templates/index.json`: hero, franja de marca, presentación, galería de renders, información, compra, bloque de producto Shopify (desactivado hasta que exista el producto) y preguntas frecuentes. Header, footer y paleta están en `sections/header-group.json`, `sections/footer-group.json` y `config/settings_data.json`.
+La Home es una landing de producto único construida con secciones propias en Liquid (`sections/vuurk-*.liquid`), sobre Savor 4.3.0. Header y footer siguen siendo los de Savor.
 
-Las imágenes se referencian como `shopify://shop_images/<archivo>`. Hay que subirlas en **Contenido → Archivos** del admin con estos nombres exactos:
+| Orden | Sección | Función |
+| --- | --- | --- |
+| 1 | `vuurk-hero` | Portada con el doypack recortado, titular y botón Comprar VUURK |
+| 2 | `vuurk-intro` | Presentación del producto y datos visibles en el envase |
+| 3 | `vuurk-energy-focus` | Bloque Energía + Enfoque |
+| 4 | `vuurk-features` | Características verificadas |
+| 5 | `vuurk-pack-viewer` | Vistas frontal, 3/4 y lateral; visor 3D nativo si el producto tiene un GLB |
+| 6 | `vuurk-moments` | Situaciones de uso |
+| 7 | `vuurk-usage-info` | Información de consumo (solo datos confirmados) |
+| 8 | `vuurk-buy` | Compra conectada al producto de Shopify: precio, inventario, cantidad, carrito y checkout |
+| 9 | `vuurk-faq` | Preguntas frecuentes |
 
-| Archivo | Uso |
-| --- | --- |
-| `vuurk-logo.png` | Logo del header |
-| `vuurk-hero-doypack.webp` | Hero |
-| `vuurk-pouches.webp` | Presentación |
-| `vuurk-render-frontal.webp`, `vuurk-render-34.webp`, `vuurk-render-lateral.webp`, `vuurk-render-zipper.webp`, `vuurk-render-base.webp` | Galería de renders |
-| `vuurk-doypack-frontal.webp` | Compra |
+Estilos y comportamiento compartidos: `assets/vuurk-landing.css` y `assets/vuurk-landing.js`. Los renders del envase (fondo transparente) están en `assets/vuurk-pack-*.webp` y se usan cuando no se elige otra imagen en el editor.
+
+Para activar la compra hay que seleccionar el producto VUURK en las secciones Hero, Compra y Envase 3D. Sin producto seleccionado no se muestra ningún precio.
 
 ## Conexión con Shopify
 

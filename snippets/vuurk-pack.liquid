@@ -1,0 +1,59 @@
+{% doc %}
+  Envase VUURK como objeto físico: imagen recortada con sombra de contacto.
+  Usa la imagen elegida en el editor y, si no hay, el render incluido en assets.
+
+  @param {object} [image] - Imagen de Shopify elegida en el editor
+  @param {string} fallback - Nombre del render en assets (fondo transparente)
+  @param {number} fallback_width - Ancho real del render de assets
+  @param {number} fallback_height - Alto real del render de assets
+  @param {string} [fallback_small] - Versión ligera del render para móvil
+  @param {number} [fallback_small_width] - Ancho de la versión ligera
+  @param {string} alt - Texto alternativo
+  @param {string} [sizes] - Atributo sizes
+  @param {boolean} [eager] - Carga prioritaria (hero)
+  @param {boolean} [shadow] - Mostrar sombra de contacto (por defecto sí)
+{% enddoc %}
+{%- liquid
+  assign loading = 'lazy'
+  assign priority = 'auto'
+  if eager
+    assign loading = 'eager'
+    assign priority = 'high'
+  endif
+  assign sizes = sizes | default: '(min-width: 900px) 45vw, 90vw'
+-%}
+<div class="vk-pack">
+  {%- if image != blank -%}
+    {{
+      image
+      | image_url: width: 1600
+      | image_tag:
+        class: 'vk-pack__img',
+        alt: alt,
+        sizes: sizes,
+        widths: '400, 600, 800, 1000, 1200, 1600',
+        loading: loading,
+        fetchpriority: priority
+    }}
+  {%- else -%}
+    {%- capture srcset -%}
+      {%- if fallback_small != blank -%}{{ fallback_small | asset_url }} {{ fallback_small_width }}w, {% endif -%}
+      {{ fallback | asset_url }} {{ fallback_width }}w
+    {%- endcapture -%}
+    <img
+      class="vk-pack__img"
+      src="{{ fallback | asset_url }}"
+      srcset="{{ srcset | strip }}"
+      sizes="{{ sizes }}"
+      width="{{ fallback_width }}"
+      height="{{ fallback_height }}"
+      alt="{{ alt | escape }}"
+      loading="{{ loading }}"
+      fetchpriority="{{ priority }}"
+      decoding="async"
+    >
+  {%- endif -%}
+  {%- unless shadow == false -%}
+    <span class="vk-pack__shadow" aria-hidden="true"></span>
+  {%- endunless -%}
+</div>
