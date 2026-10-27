@@ -352,6 +352,16 @@
     bottom: -13%;
   }
 }
+/* Centrado vertical del envase sobresaliente */
+@media (min-width: 900px) {
+  .vk-ef__center .vk-pack {
+    transform: translateY(-65px);
+  }
+
+  .vk-ef__center .vk-pack__shadow {
+    bottom: -4%;
+  }
+}
 /* FIN VUURK EF */
 
 /* ---------- 4. Características ---------- */
