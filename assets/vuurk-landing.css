@@ -653,57 +653,52 @@
 }
 
 
-/* VUURK VIEWER: configuración unificada */
-@media (min-width: 900px) {
-  .vk-viewer__grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    align-items: center;
-  }
 
-  .vk-stage {
-    height: clamp(380px, 51svh, 480px);
-    min-height: 0;
-  }
-
-  .vk-stage__view {
-    inset: 24px 32px 44px;
-    overflow: visible;
-  }
-
-  .vk-stage__view .vk-pack {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    overflow: visible;
-  }
-
-  .vk-stage__view .vk-pack__img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    object-position: center;
-    transform: none;
-  }
+/* VUURK VIEWER: presentación limpia */
+.vk-stage {
+  height: 580px;
+  min-height: 0;
+  background: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
-@media (max-width: 899px) {
-  .vk-stage {
-    height: clamp(350px, 90vw, 540px);
-    min-height: 0;
-  }
+.vk-stage__floor {
+  display: none;
+}
 
-  .vk-stage__view {
-    inset: 8% 10% 14%;
-  }
+.vk-stage__view {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
 
-  .vk-stage__view .vk-pack__img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+.vk-stage__view .vk-pack {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vk-stage__view .vk-pack__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform: none;
+}
+
+.vk-stage__view--lateral .vk-pack__img {
+  max-height: 100%;
 }
 
 .vk-viewer__buy {
@@ -728,131 +723,15 @@
   background: #ff8b43;
 }
 
+@media (max-width: 899px) {
+  .vk-stage {
+    height: clamp(350px, 90vw, 540px);
+  }
+}
+
 @media (max-width: 599px) {
   .vk-viewer__buy {
     width: 100%;
-  }
-}
-
-/* VUURK VIEWER: encuadre definitivo */
-.vk-stage__view {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.vk-stage__view .vk-pack {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-}
-
-.vk-stage__view .vk-pack__img {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 88%;
-  max-height: 88%;
-  object-fit: contain;
-  object-position: center;
-  transform: none;
-}
-
-@media (min-width: 900px) {
-  .vk-stage {
-    height: 440px;
-    min-height: 0;
-  }
-
-  .vk-stage__view {
-    inset: 20px 30px 35px;
-  }
-}
-
-@media (max-width: 899px) {
-  .vk-stage__view .vk-pack__img {
-    max-width: 85%;
-    max-height: 85%;
-  }
-}
-
-/* VUURK VIEWER: producto protagonista sin tarjeta */
-@media (min-width: 900px) {
-  .vk-stage {
-    height: 490px;
-    min-height: 0;
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-  }
-
-  .vk-stage__view {
-    inset: 0 !important;
-    overflow: visible !important;
-    background: transparent !important;
-  }
-
-  .vk-stage__view .vk-pack {
-    width: 100%;
-    height: 100%;
-    background: transparent !important;
-  }
-
-  .vk-stage__view .vk-pack__img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 95% !important;
-    max-height: 95% !important;
-    object-fit: contain !important;
-    transform: none !important;
-  }
-}
-
-/* Mantener la presentación limpia en móviles */
-@media (max-width: 899px) {
-  .vk-stage {
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .vk-stage__view {
-    background: transparent !important;
-  }
-}
-
-/* VUURK VIEWER: escala protagonista V4 */
-@media (min-width: 900px) {
-  .vk-stage {
-    height: 540px !important;
-    background: transparent !important;
-    background-image: none !important;
-  }
-
-  .vk-stage__view {
-    inset: 0 !important;
-    background: transparent !important;
-    background-image: none !important;
-  }
-
-  .vk-stage__view .vk-pack__img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    transform: scale(1.3) !important;
-    transform-origin: center center !important;
-  }
-
-  .vk-stage__view .vk-pack__shadow {
-    opacity: 0.35;
   }
 }
 
@@ -873,17 +752,4 @@
 .shopify-section-header-sticky .header-wrapper,
 #shopify-section-header .header-wrapper {
   position: static !important;
-}
-
-/* VUURK: vista lateral con escala proporcional */
-@media (min-width: 900px) {
-  .vk-stage__view--lateral .vk-pack__img {
-    width: auto !important;
-    height: 510px !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    transform: scale(1.12) !important;
-    transform-origin: center center !important;
-  }
 }
