@@ -1,0 +1,132 @@
+/* VUURK Unzip V2 (U1): reproductor de fotogramas. Usa los tokens de .vk (vuurk-landing.css). */
+/* Las clases con display (botones, CTA) no deben anular el atributo hidden. */
+.vk-unzip2 [hidden] { display: none !important; }
+.vk-unzip2 .vk__head { margin-bottom: clamp(24px, 4vw, 48px); }
+.vk-unzip2__notice {
+  display: inline-block;
+  margin: 18px 0 0;
+  padding: 6px 12px;
+  border: 1px dashed var(--vk-orange);
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--vk-orange);
+}
+
+.vk-unzip2__fallback img,
+.vk-unzip2__stage {
+  width: 100%;
+  aspect-ratio: 15 / 8;
+  border-radius: var(--vk-radius);
+  background: #1e1e1e;
+}
+.vk-unzip2__fallback img { object-fit: cover; }
+
+.vk-unzip2__stage {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y; /* el scroll vertical sigue funcionando sobre la sección */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.vk-unzip2.is-dragging .vk-unzip2__stage { cursor: grabbing; }
+.vk-unzip2__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.vk-unzip2__loader {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vk-muted);
+}
+.vk-unzip2.is-loading .vk-unzip2__loader { display: grid; }
+
+/* Pista sobre la línea del cierre: del 10 % al 90 % del ancho */
+.vk-unzip2__track {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 42%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 4px;
+  background: rgb(255 231 208 / 0.18);
+}
+.vk-unzip2__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--vk-unzip2-progress, 0%);
+  border-radius: inherit;
+  background: var(--vk-orange);
+}
+.vk-unzip2__handle {
+  position: absolute;
+  top: 50%;
+  left: var(--vk-unzip2-progress, 0%);
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: var(--vk-orange);
+  box-shadow: 0 0 0 6px rgb(252 110 32 / 0.28), 0 10px 24px -8px rgb(0 0 0 / 0.7);
+  cursor: inherit;
+  touch-action: none;
+}
+.vk-unzip2__handle::after {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  background: var(--vk-cream);
+}
+.vk-unzip2__handle:focus-visible { outline: 3px solid var(--vk-cream); outline-offset: 4px; }
+
+.vk-unzip2__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(42% + 34px);
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vk-cream);
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.8);
+  transition: opacity 0.3s var(--vk-ease);
+}
+.vk-unzip2.is-open .vk-unzip2__hint { opacity: 0; }
+
+.vk-unzip2__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+.vk-unzip2__cta { display: flex; justify-content: center; margin-top: 20px; }
+
+.vk-unzip2__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 749px) {
+  .vk-unzip2__fallback img,
+  .vk-unzip2__stage { aspect-ratio: 4 / 5; }
+  .vk-unzip2__controls .vk-btn,
+  .vk-unzip2__cta .vk-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vk-unzip2__hint { transition: none; }
+}
