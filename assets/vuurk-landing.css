@@ -731,3 +731,33 @@
     width: 100%;
   }
 }
+
+/* VUURK VIEWER: escritorio compacto V2 */
+@media (min-width: 900px) and (min-height: 650px) {
+  .vk-stage {
+    height: clamp(340px, 49svh, 460px);
+    min-height: 0;
+  }
+
+  .vk-stage__view {
+    inset: 5% 13% 9%;
+  }
+
+  .vk-stage__view .vk-pack,
+  .vk-stage__view .vk-pack__img {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .vk-stage__view .vk-pack__img {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .vk-viewer__buy {
+    min-height: 46px;
+    margin: 8px 0 16px;
+    padding: 10px 24px;
+  }
+}
