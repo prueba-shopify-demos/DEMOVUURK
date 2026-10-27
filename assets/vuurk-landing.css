@@ -652,45 +652,47 @@
   .vk-reveal { opacity: 1; transform: none; }
 }
 
-/* VUURK: visor mejorado y compra directa */
+
+/* VUURK VIEWER: configuración unificada */
 @media (min-width: 900px) {
   .vk-viewer__grid {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     align-items: center;
   }
 
   .vk-stage {
-    height: 620px;
+    height: clamp(380px, 51svh, 480px);
     min-height: 0;
   }
 
   .vk-stage__view {
-    inset: 6% 9% 12%;
+    inset: 24px 32px 44px;
+    overflow: visible;
   }
 
   .vk-stage__view .vk-pack {
     width: 100%;
     height: 100%;
     min-height: 0;
+    overflow: visible;
   }
 
   .vk-stage__view .vk-pack__img {
+    display: block;
     width: 100%;
     height: 100%;
+    max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     object-position: center;
-  }
-
-  .vk-stage__view.is-active {
     transform: none;
   }
 }
 
 @media (max-width: 899px) {
   .vk-stage {
-    min-height: 0;
     height: clamp(350px, 90vw, 540px);
+    min-height: 0;
   }
 
   .vk-stage__view {
@@ -729,66 +731,5 @@
 @media (max-width: 599px) {
   .vk-viewer__buy {
     width: 100%;
-  }
-}
-
-/* VUURK VIEWER: escritorio compacto V2 */
-@media (min-width: 900px) and (min-height: 650px) {
-  .vk-stage {
-    height: clamp(340px, 49svh, 460px);
-    min-height: 0;
-  }
-
-  .vk-stage__view {
-    inset: 5% 13% 9%;
-  }
-
-  .vk-stage__view .vk-pack,
-  .vk-stage__view .vk-pack__img {
-    width: 100%;
-    height: 100%;
-    max-height: 100%;
-  }
-
-  .vk-stage__view .vk-pack__img {
-    object-fit: contain;
-    object-position: center;
-  }
-
-  .vk-viewer__buy {
-    min-height: 46px;
-    margin: 8px 0 16px;
-    padding: 10px 24px;
-  }
-}
-
-/* VUURK VIEWER: imagen completa V3 */
-@media (min-width: 900px) {
-  .vk-stage {
-    height: clamp(340px, 49svh, 460px);
-    min-height: 0;
-  }
-
-  .vk-stage__view {
-    inset: 20px 45px 35px;
-    overflow: hidden;
-  }
-
-  .vk-stage__view .vk-pack {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .vk-stage__view .vk-pack__img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    object-position: center;
-    transform: none;
   }
 }
