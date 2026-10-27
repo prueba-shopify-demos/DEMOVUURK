@@ -882,3 +882,15 @@
     transform-origin: center center !important;
   }
 }
+
+/* VUURK VIEWER: tamaño lateral corregido V2 */
+@media (min-width: 900px) {
+  .vk-stage__view:nth-of-type(3) .vk-pack__img {
+    width: auto !important;
+    height: 540px !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+}
