@@ -182,8 +182,8 @@
 }
 .vk-hero__copy { grid-area: copy; }
 .vk-hero__media { grid-area: media; height: min(78svh, 760px); min-height: 420px; }
-.vk-hero__media .vk-pack { height: 100%; }
-.vk-hero__media .vk-pack__img { height: 92%; animation: vk-float 6s ease-in-out infinite; }
+.vk-hero__media .vk-pack { width: 100%; height: 100%; min-height: 0; }
+.vk-hero__media .vk-pack__img { width: 100%; height: 82%; object-fit: contain; animation: vk-float 6s ease-in-out infinite; }
 .vk-hero__tilt { height: 100%; display: grid; place-items: center; transition: transform 0.6s var(--vk-ease); transform-style: preserve-3d; }
 .vk-hero__plus { color: var(--vk-orange); }
 .vk-hero__price { margin: 22px 0 0; font-family: var(--vk-display); font-size: 22px; letter-spacing: 0.04em; color: var(--vk-fg); }
@@ -284,7 +284,7 @@
 .vk-stage__floor { position: absolute; left: 0; right: 0; bottom: 0; height: 26%; background: linear-gradient(180deg, rgb(0 0 0 / 0), rgb(0 0 0 / 0.35)); }
 .vk-stage__view {
   position: absolute;
-  inset: 8% 10% 10%;
+  inset: 10% 12% 16%;
   opacity: 0;
   transform: perspective(1200px) rotateY(var(--vk-from, 18deg)) scale(0.96);
   transition: opacity 0.55s var(--vk-ease), transform 0.7s var(--vk-ease);
@@ -388,7 +388,7 @@
 }
 .vk-buy__media::before { content: ''; position: absolute; right: -22%; top: -18%; width: 80%; height: 64%; background: var(--vk-orange); transform: rotate(-32deg); }
 .vk-buy__media::after { content: ''; position: absolute; left: -12%; bottom: -20%; width: 58%; height: 44%; background: var(--vk-cream); transform: rotate(-32deg); opacity: 0.9; }
-.vk-buy__media .vk-pack { position: absolute; z-index: 2; inset: 7% 12% 5%; }
+.vk-buy__media .vk-pack { position: absolute; z-index: 2; inset: 10% 14% 12%; }
 .vk-buy__media .vk-pack__img { width: 100%; height: 100%; object-fit: contain; }
 .vk-buy__panel { max-width: 520px; }
 .vk-buy__price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin: 22px 0 0; font-family: var(--vk-display); font-size: clamp(34px, 4vw, 48px); font-weight: 600; line-height: 1; }
