@@ -651,3 +651,83 @@
   .vk *::after { animation: none !important; transition: none !important; }
   .vk-reveal { opacity: 1; transform: none; }
 }
+
+/* VUURK: visor mejorado y compra directa */
+@media (min-width: 900px) {
+  .vk-viewer__grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .vk-stage {
+    height: 620px;
+    min-height: 0;
+  }
+
+  .vk-stage__view {
+    inset: 6% 9% 12%;
+  }
+
+  .vk-stage__view .vk-pack {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .vk-stage__view .vk-pack__img {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .vk-stage__view.is-active {
+    transform: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .vk-stage {
+    min-height: 0;
+    height: clamp(350px, 90vw, 540px);
+  }
+
+  .vk-stage__view {
+    inset: 8% 10% 14%;
+  }
+
+  .vk-stage__view .vk-pack__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.vk-viewer__buy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  margin: 4px 0 28px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: var(--vk-orange);
+  color: #171717;
+  font-family: var(--vk-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: background-color .2s ease;
+}
+
+.vk-viewer__buy:hover {
+  background: #ff8b43;
+}
+
+@media (max-width: 599px) {
+  .vk-viewer__buy {
+    width: 100%;
+  }
+}
