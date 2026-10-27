@@ -778,3 +778,51 @@
     max-height: 85%;
   }
 }
+
+/* VUURK VIEWER: producto protagonista sin tarjeta */
+@media (min-width: 900px) {
+  .vk-stage {
+    height: 490px;
+    min-height: 0;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .vk-stage__view {
+    inset: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .vk-stage__view .vk-pack {
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+  }
+
+  .vk-stage__view .vk-pack__img {
+    width: auto !important;
+    height: auto !important;
+    max-width: 95% !important;
+    max-height: 95% !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+}
+
+/* Mantener la presentación limpia en móviles */
+@media (max-width: 899px) {
+  .vk-stage {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .vk-stage__view {
+    background: transparent !important;
+  }
+}
