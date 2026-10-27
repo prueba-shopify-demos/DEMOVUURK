@@ -149,21 +149,19 @@
       }
     },
     "vk_viewer": {
-      "type": "vuurk-pack-viewer",
+      "type": "vuurk-unzip-player",
       "settings": {
-        "eyebrow": "El envase",
-        "title": "Míralo desde cada ángulo.",
-        "text": "<p>Doypack negro, naranja y crema con cierre zipper. Desliza o elige una vista para recorrerlo.</p>",
+        "eyebrow": "EXPERIENCIA VUURK",
+        "title": "DESCUBRÍ VUURK",
+        "text": "<p>Deslizá para abrir el envase.</p>",
+        "hint": "Arrastrá hacia la derecha para abrir",
+        "slider_label": "Apertura del envase VUURK",
+        "open_label": "Abrir envase",
+        "reset_label": "Reiniciar",
+        "open_alt": "Demostración de apertura del envase VUURK",
         "product": "vuurk-energy-gummies-energia-enfoque",
-        "image_frontal": "shopify://shop_images/VUURK_Energy_Gummies_Berry_Pouch.png",
-        "label_frontal": "Frontal",
-        "image_34": "shopify://shop_images/VUURK_Fiery_Berry_Energy_Pouch.png",
-        "label_34": "3/4",
-        "image_lateral": "shopify://shop_images/VUURK_Energy_Supplement_Pouch.png",
-        "label_lateral": "Lateral",
-        "hint": "Desliza para cambiar de vista",
-        "hint_3d": "Arrastra para girar el envase",
-        "detail_caption": "Detalle del cierre zipper."
+        "cta_label": "Comprar VUURK",
+        "frame_count": 48
       }
     },
     "vk_moments": {

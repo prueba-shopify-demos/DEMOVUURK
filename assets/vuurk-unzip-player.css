@@ -130,3 +130,50 @@
 @media (prefers-reduced-motion: reduce) {
   .vk-unzip2__hint { transition: none; }
 }
+
+
+/* VUURK UNZIP U3 — SECCIÓN PRINCIPAL */
+.vk-unzip2 .vk__wrap {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.vk-unzip2 .vk__head {
+  margin-bottom: 28px;
+}
+
+.vk-unzip2 .vk__h2 {
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.vk-unzip2__stage,
+.vk-unzip2__fallback img {
+  border-radius: 18px;
+}
+
+.vk-unzip2__controls {
+  margin-top: 16px;
+}
+
+@media (max-width: 749px) {
+  .vk-unzip2 .vk__head {
+    margin-bottom: 18px;
+  }
+
+  .vk-unzip2__stage,
+  .vk-unzip2__fallback img {
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+  }
+
+  .vk-unzip2__controls {
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .vk-unzip2__notice {
+    font-size: 11px;
+    margin-top: 12px;
+  }
+}
