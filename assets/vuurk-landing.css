@@ -210,7 +210,10 @@
   letter-spacing: 0.04em;
   color: var(--vk-muted);
 }
-@keyframes vk-float { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-14px) rotate(0.6deg); } }
+@keyframes vk-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
 
 /* ---------- 2. Presentación ---------- */
 .vk-intro__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; }

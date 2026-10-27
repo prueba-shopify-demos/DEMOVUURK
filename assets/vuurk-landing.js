@@ -33,7 +33,7 @@
         const rect = area.getBoundingClientRect();
         const x = (event.clientX - rect.left) / rect.width - 0.5;
         const y = (event.clientY - rect.top) / rect.height - 0.5;
-        target.style.transform = `perspective(1400px) rotateY(${x * 10}deg) rotateX(${y * -6}deg)`;
+        target.style.transform = `perspective(1600px) rotateY(${x * 4}deg) rotateX(${y * -3}deg)`;
       });
       area.addEventListener('pointerleave', () => {
         target.style.transform = '';
