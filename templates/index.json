@@ -11,19 +11,6 @@
   "sections": {
     "vk_hero": {
       "type": "vuurk-hero",
-      "settings": {
-        "eyebrow": "VUURK Energy Gummies",
-        "title_line_1": "Energía",
-        "title_line_2": "+ Enfoque.",
-        "text": "<p>Gummies energéticas en doypack, con el diseño negro y naranja de VUURK.</p>",
-        "image_alt": "Doypack VUURK Energy Gummies, diseño negro, naranja y crema",
-        "product": "",
-        "show_price": true,
-        "button_label": "Comprar VUURK",
-        "button_link": "#comprar",
-        "button_2_label": "Ver el envase",
-        "button_2_link": "#envase"
-      },
       "blocks": {
         "vk_1": {
           "type": "chip",
@@ -48,16 +35,24 @@
         "vk_1",
         "vk_2",
         "vk_3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "VUURK Energy Gummies",
+        "title_line_1": "Energía",
+        "title_line_2": "+ Enfoque.",
+        "text": "<p>Gummies energéticas en doypack, con el diseño negro y naranja de VUURK.</p>",
+        "image": "shopify://shop_images/VUURK_Energy_Gummies_Pouch.png",
+        "image_alt": "Doypack VUURK Energy Gummies, diseño negro, naranja y crema",
+        "product": "",
+        "show_price": true,
+        "button_label": "Comprar VUURK",
+        "button_link": "#comprar",
+        "button_2_label": "Ver el envase",
+        "button_2_link": "#envase"
+      }
     },
     "vk_intro": {
       "type": "vuurk-intro",
-      "settings": {
-        "eyebrow": "El producto",
-        "title": "VUURK Energy Gummies.",
-        "text": "<p>Gummies energéticas de la línea Energía + Enfoque, presentadas en un doypack negro, naranja y crema con cierre zipper.</p>",
-        "image_alt": "Doypack VUURK en perspectiva 3/4"
-      },
       "blocks": {
         "vk_1": {
           "type": "spec",
@@ -85,7 +80,14 @@
         "vk_1",
         "vk_2",
         "vk_3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "El producto",
+        "title": "VUURK Energy Gummies.",
+        "text": "<p>Gummies energéticas de la línea Energía + Enfoque, presentadas en un doypack negro, naranja y crema con cierre zipper.</p>",
+        "image": "shopify://shop_images/VUURK_Energy_Gummies_Berry_Pouch.png",
+        "image_alt": "Doypack VUURK en perspectiva 3/4"
+      }
     },
     "vk_energy": {
       "type": "vuurk-energy-focus",
@@ -94,16 +96,12 @@
         "text_1": "Para los días que piden ritmo: entrenar, estudiar, trabajar o salir de viaje.",
         "word_2": "Enfoque",
         "text_2": "Para los momentos en que lo importante necesita tu atención.",
+        "image": "shopify://shop_images/VUURK_Pouch_Side_Profile.png",
         "image_alt": "Vista lateral del doypack VUURK"
       }
     },
     "vk_features": {
       "type": "vuurk-features",
-      "settings": {
-        "eyebrow": "Características verificadas",
-        "title": "Lo que ves es lo que hay.",
-        "note": "Solo se muestran datos visibles en el envase o propios de la tienda. La ficha técnica se añadirá cuando VUURK la confirme."
-      },
       "blocks": {
         "vk_1": {
           "type": "feature",
@@ -143,7 +141,12 @@
         "vk_2",
         "vk_3",
         "vk_4"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "Características verificadas",
+        "title": "Lo que ves es lo que hay.",
+        "note": "Solo se muestran datos visibles en el envase o propios de la tienda. La ficha técnica se añadirá cuando VUURK la confirme."
+      }
     },
     "vk_viewer": {
       "type": "vuurk-pack-viewer",
@@ -151,9 +154,12 @@
         "eyebrow": "El envase",
         "title": "Míralo desde cada ángulo.",
         "text": "<p>Doypack negro, naranja y crema con cierre zipper. Desliza o elige una vista para recorrerlo.</p>",
-        "product": "",
+        "product": "vuurk-energy-gummies-energia-enfoque",
+        "image_frontal": "shopify://shop_images/VUURK_Energy_Gummies_Berry_Pouch.png",
         "label_frontal": "Frontal",
+        "image_34": "shopify://shop_images/VUURK_Fiery_Berry_Energy_Pouch.png",
         "label_34": "3/4",
+        "image_lateral": "shopify://shop_images/VUURK_Energy_Gummies_Pouch.png",
         "label_lateral": "Lateral",
         "hint": "Desliza para cambiar de vista",
         "hint_3d": "Arrastra para girar el envase",
@@ -162,10 +168,6 @@
     },
     "vk_moments": {
       "type": "vuurk-moments",
-      "settings": {
-        "eyebrow": "Situaciones de uso",
-        "title": "Hecho para tu día."
-      },
       "blocks": {
         "vk_1": {
           "type": "moment",
@@ -201,16 +203,14 @@
         "vk_2",
         "vk_3",
         "vk_4"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "Situaciones de uso",
+        "title": "Hecho para tu día."
+      }
     },
     "vk_info": {
       "type": "vuurk-usage-info",
-      "settings": {
-        "eyebrow": "Información de consumo",
-        "title": "Datos del producto.",
-        "text": "<p>Publicamos solo información confirmada por VUURK. Consulta siempre la etiqueta del envase.</p>",
-        "pending_text": "Pendiente de confirmación por VUURK"
-      },
       "blocks": {
         "vk_1": {
           "type": "row",
@@ -262,24 +262,16 @@
         "vk_4",
         "vk_5",
         "vk_6"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "Información de consumo",
+        "title": "Datos del producto.",
+        "text": "<p>Publicamos solo información confirmada por VUURK. Consulta siempre la etiqueta del envase.</p>",
+        "pending_text": "Pendiente de confirmación por VUURK"
+      }
     },
     "vk_buy": {
       "type": "vuurk-buy",
-      "settings": {
-        "product": "",
-        "eyebrow": "Comprar",
-        "title": "VUURK Energy Gummies",
-        "text": "<p>Doypack VUURK Energía + Enfoque.</p>",
-        "image_alt": "Doypack VUURK Energy Gummies",
-        "button_label": "Agregar al carrito",
-        "show_dynamic_checkout": true,
-        "variant_label": "Presentación",
-        "quantity_label": "Cantidad",
-        "in_stock_label": "Disponible",
-        "sold_out_label": "Agotado",
-        "unavailable_label": "Disponible pronto"
-      },
       "blocks": {
         "vk_1": {
           "type": "trust",
@@ -290,17 +282,25 @@
       },
       "block_order": [
         "vk_1"
-      ]
+      ],
+      "settings": {
+        "product": "",
+        "eyebrow": "Comprar",
+        "title": "VUURK Energy Gummies",
+        "text": "<p>Doypack VUURK Energía + Enfoque.</p>",
+        "image": "shopify://shop_images/VUURK_Energy_Gummies_Pouch.png",
+        "image_alt": "Doypack VUURK Energy Gummies",
+        "button_label": "Agregar al carrito",
+        "show_dynamic_checkout": true,
+        "variant_label": "Presentación",
+        "quantity_label": "Cantidad",
+        "in_stock_label": "Disponible",
+        "sold_out_label": "Agotado",
+        "unavailable_label": "Disponible pronto"
+      }
     },
     "vk_faq": {
       "type": "vuurk-faq",
-      "settings": {
-        "eyebrow": "Preguntas frecuentes",
-        "title": "Antes de comprar.",
-        "open_first": true,
-        "button_label": "Comprar VUURK",
-        "button_link": "#comprar"
-      },
       "blocks": {
         "vk_1": {
           "type": "question",
@@ -352,7 +352,14 @@
         "vk_4",
         "vk_5",
         "vk_6"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "Preguntas frecuentes",
+        "title": "Antes de comprar.",
+        "open_first": true,
+        "button_label": "Comprar VUURK",
+        "button_link": "#comprar"
+      }
     }
   },
   "order": [
