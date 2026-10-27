@@ -177,3 +177,61 @@
     margin-top: 12px;
   }
 }
+
+/* VUURK ZIPPER — CONTROL SOBRE EL CIERRE */
+
+/* El control se ubica sobre la parte superior del envase. */
+.vk-unzip2__track {
+  left: 27%;
+  right: 27%;
+  top: 18%;
+  height: 48px;
+  margin-top: -24px;
+  background: transparent;
+  border: 0;
+  z-index: 3;
+}
+
+/* Eliminar la barra horizontal que cruza el packaging. */
+.vk-unzip2__fill {
+  display: none;
+}
+
+/* Tirador discreto, directamente sobre el zipper. */
+.vk-unzip2__handle {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  background: #fc6e20;
+  border: 2px solid #ffe7d0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .45);
+}
+
+.vk-unzip2__handle::after {
+  inset: 12px;
+}
+
+/* Indicación fuera del centro del logotipo. */
+.vk-unzip2__hint {
+  top: 29%;
+  font-size: 12px;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+
+/* Ajustes para celulares. */
+@media (max-width: 749px) {
+  .vk-unzip2__track {
+    left: 16%;
+    right: 16%;
+    top: 19%;
+  }
+
+  .vk-unzip2__hint {
+    top: 30%;
+    font-size: 11px;
+    padding-inline: 12px;
+  }
+}
+
+/* FIN VUURK ZIPPER */
