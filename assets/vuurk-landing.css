@@ -880,3 +880,183 @@
     max-height: 330px;
   }
 }
+
+
+/* VUURK MOBILE FIRST — SECCIONES V2 */
+@media (max-width: 599px) {
+
+  /* Espaciado general */
+  .vk__pad {
+    padding-block: 44px;
+  }
+
+  .vk__head {
+    margin-bottom: 24px;
+  }
+
+  .vk__h2 {
+    font-size: clamp(34px, 9vw, 48px);
+    line-height: 1;
+  }
+
+  .vk__h3 {
+    font-size: 24px;
+  }
+
+  /* Presentación */
+  .vk-intro__grid {
+    gap: 24px;
+  }
+
+  .vk-intro__media {
+    max-width: 390px;
+    margin-inline: auto;
+  }
+
+  .vk-specs {
+    margin-top: 24px;
+  }
+
+  .vk-specs li {
+    padding-block: 12px;
+  }
+
+  /* Energía + Enfoque */
+  .vk-ef__grid {
+    gap: 18px;
+  }
+
+  .vk-ef__word {
+    font-size: clamp(40px, 12vw, 54px);
+    line-height: 1;
+  }
+
+  .vk-ef__text {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .vk-ef__center {
+    width: min(68%, 230px);
+  }
+
+  /* Beneficios */
+  .vk-feat__grid {
+    gap: 12px;
+  }
+
+  .vk-card {
+    padding: 20px;
+  }
+
+  .vk-card__icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 16px;
+  }
+
+  .vk-card__num {
+    margin-bottom: 14px;
+  }
+
+  .vk-card__text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Momentos */
+  .vk-moments__grid {
+    gap: 12px;
+  }
+
+  .vk-moment {
+    min-height: 190px;
+    padding: 20px;
+  }
+
+  .vk-moment .vk__h3 {
+    margin-top: 24px;
+  }
+
+  .vk-moment .vk-card__text {
+    max-width: 85%;
+  }
+
+  /* Visor del packaging */
+  .vk-viewer__grid {
+    gap: 28px;
+  }
+
+  .vk-stage {
+    height: clamp(330px, 95vw, 410px);
+    min-height: 0;
+  }
+
+  .vk-stage__hint {
+    bottom: -34px;
+    font-size: 11px;
+    padding: 7px 11px;
+  }
+
+  .vk-tabs {
+    gap: 6px;
+  }
+
+  .vk-tab {
+    min-height: 44px;
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+
+  /* Información de uso */
+  .vk-info__grid {
+    gap: 24px;
+  }
+
+  .vk-table li {
+    padding-block: 14px;
+  }
+
+  .vk-table__k {
+    font-size: 17px;
+  }
+
+  .vk-table__v {
+    font-size: 14px;
+  }
+
+  /* Compra */
+  .vk-buy__grid {
+    gap: 24px;
+  }
+
+  .vk-buy__price {
+    font-size: 36px;
+  }
+
+  .vk-buy__form {
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  .vk-buy__trust {
+    gap: 10px;
+  }
+
+  /* Preguntas frecuentes */
+  .vk-faq__grid {
+    gap: 24px;
+  }
+
+  .vk-faq__item summary {
+    padding-block: 18px;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  .vk-faq__answer {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
