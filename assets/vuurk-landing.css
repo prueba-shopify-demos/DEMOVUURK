@@ -193,7 +193,7 @@
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: min(62svh, 600px);
+  max-height: min(74svh, 720px);
   object-fit: contain;
   animation: vk-float 6s ease-in-out infinite;
 }
