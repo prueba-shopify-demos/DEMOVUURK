@@ -22,8 +22,8 @@
   assign last_n = count | prepend: pad | slice: digits, 3
 
   if using_test
-    assign fallback_d = 'vuurk-unzip-test-d-' | append: last_n | append: '.webp' | asset_url
-    assign fallback_m = 'vuurk-unzip-test-m-' | append: last_n | append: '.webp' | asset_url
+    assign fallback_d = 'vuurk-zipper-frame-d-' | append: last_n | append: '.webp' | asset_url
+    assign fallback_m = 'vuurk-zipper-frame-m-' | append: last_n | append: '.webp' | asset_url
   else
     assign fallback_d = pattern_d | replace: '{n}', last_n
     assign fallback_m = pattern_m | default: pattern_d | replace: '{n}', last_n
@@ -54,7 +54,7 @@
         <div class="vk__lead">{{ section.settings.text }}</div>
       {%- endif -%}
       {%- if using_test -%}
-        <p class="vk-unzip2__notice">Fotogramas de prueba: no muestran el producto final.</p>
+        <p class="vk-unzip2__notice">Vista conceptual del packaging VUURK.</p>
       {%- endif -%}
     </div>
 
@@ -114,7 +114,7 @@
           {%- for i in (1..count) -%}
             {%- assign n = i | prepend: pad | slice: digits, 3 -%}
             {%- if using_test -%}
-              {%- assign url = 'vuurk-unzip-test-d-' | append: n | append: '.webp' | asset_url -%}
+              {%- assign url = 'vuurk-zipper-frame-d-' | append: n | append: '.webp' | asset_url -%}
             {%- else -%}
               {%- assign url = pattern_d | replace: '{n}', n -%}
             {%- endif -%}
@@ -125,7 +125,7 @@
           {%- for i in (1..count) -%}
             {%- assign n = i | prepend: pad | slice: digits, 3 -%}
             {%- if using_test -%}
-              {%- assign url = 'vuurk-unzip-test-m-' | append: n | append: '.webp' | asset_url -%}
+              {%- assign url = 'vuurk-zipper-frame-m-' | append: n | append: '.webp' | asset_url -%}
             {%- else -%}
               {%- assign url = pattern_m | default: pattern_d | replace: '{n}', n -%}
             {%- endif -%}
