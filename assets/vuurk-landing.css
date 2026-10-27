@@ -428,7 +428,7 @@
 .vk-stage__hint {
   position: absolute;
   left: 50%;
-  bottom: 18px;
+  bottom: -38px;
   z-index: 3;
   transform: translateX(-50%);
   display: inline-flex;
