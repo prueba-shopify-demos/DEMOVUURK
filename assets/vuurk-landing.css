@@ -855,3 +855,22 @@
     opacity: 0.35;
   }
 }
+
+/* VUURK: encabezado no fijo */
+.shopify-section-header-sticky,
+.shopify-section-header-hidden,
+.shopify-section-header-animate {
+  position: static !important;
+  transform: none !important;
+}
+
+#shopify-section-header,
+.shopify-section-group-header-group {
+  position: static !important;
+  top: auto !important;
+}
+
+.shopify-section-header-sticky .header-wrapper,
+#shopify-section-header .header-wrapper {
+  position: static !important;
+}
