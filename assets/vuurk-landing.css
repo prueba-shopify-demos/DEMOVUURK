@@ -1060,3 +1060,49 @@
     line-height: 1.6;
   }
 }
+
+
+/* VUURK MOBILE FIRST — HEADER FOOTER V3 */
+@media screen and (max-width: 749px) {
+
+  /* Header: conservar distribución nativa Shopify */
+  #header-component .header__columns {
+    --header-mobile-bookend: 44px;
+    min-width: 0;
+  }
+
+  #header-component .header-logo {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #header-component .header__icon--menu {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  #header-component header-actions {
+    min-width: 44px;
+    align-items: center;
+  }
+
+  /* Footer: distribución compacta */
+  .footer-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    min-width: 0;
+  }
+
+  .footer-content > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .footer-content .menu__heading__default {
+    line-height: 1.2;
+  }
+
+  .footer-content input {
+    max-width: 100%;
+  }
+}
