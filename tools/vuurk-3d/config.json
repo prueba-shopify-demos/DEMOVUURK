@@ -1,0 +1,88 @@
+{
+  "_nota": "v2 · Medidas PROVISIONALES del prototipo. No son medidas oficiales de VUURK; reemplazar cuando el cliente entregue las reales. Unidades: metros y grados. La v1 está congelada en v1/config.json.",
+  "pouch": {
+    "width": 0.16,
+    "height": 0.23,
+    "gusset": 0.08,
+    "gusset_rise": 0.012,
+    "side_seal": 0.008,
+    "zipper_from_top": 0.022,
+    "hinge_below_zipper": 0.016,
+    "pinch_length": 0.008,
+    "lip_gap": 0.0013,
+    "seal_gap": 0.0003,
+    "zipper_ridge": 0.0006,
+    "film_thickness": 0.00025,
+    "grid_x": 121,
+    "grid_z_body": 60,
+    "grid_z_top": 90,
+    "base_round": 0.035,
+    "wrinkle": 0.0007
+  },
+  "zipper": {
+    "track_radius": 0.0014,
+    "ring_segments": 8
+  },
+  "opening": {
+    "keys": 20,
+    "front_curl_deg": 110,
+    "back_curl_deg": 22,
+    "curl_power": 0.4,
+    "unpinch_at": 0.3,
+    "edge_ripple": 0.0015,
+    "lens_power": 0.7,
+    "full_amplitude_at": 0.6
+  },
+  "gummies": {
+    "count": 60,
+    "size": [
+      0.019,
+      0.016,
+      0.012
+    ],
+    "zone_below_zipper": [
+      0.004,
+      0.1
+    ],
+    "seed": 7,
+    "attempts": 40000
+  },
+  "camera": {
+    "lens_mm": 85,
+    "sensor_height_mm": 24,
+    "elevation_deg": 20,
+    "frame_height": 0.285,
+    "target_z_ratio": 0.53
+  },
+  "render": {
+    "width": 640,
+    "height": 360,
+    "samples": 48,
+    "seed": 1
+  },
+  "animation": {
+    "frame_start": 0,
+    "frame_end": 100
+  },
+  "states": [
+    0,
+    0.5,
+    1.0
+  ],
+  "name": "v2",
+  "sequence": {
+    "frames": 24,
+    "width": 1200,
+    "height": 640,
+    "samples": 32,
+    "adaptive_threshold": 0.02,
+    "region_below_hinge": 0.045,
+    "feather_px": 24,
+    "webp_quality": 82,
+    "mobile_crop": [
+      512,
+      640
+    ],
+    "theme_prefix": "vuurk-unzip-3d"
+  }
+}

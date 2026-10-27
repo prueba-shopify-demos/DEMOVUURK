@@ -371,7 +371,9 @@
         id: event.pointerId,
         startX: event.clientX,
         startProgress: this.progress,
-        width: this.stage.getBoundingClientRect().width * 0.8
+        // El recorrido completo es el ancho de la pista sobre el zipper: el tirador sigue al dedo.
+        width: (this.handle.parentElement && this.handle.parentElement.getBoundingClientRect().width) ||
+          this.stage.getBoundingClientRect().width * 0.8
       };
       this.stage.setPointerCapture(event.pointerId);
       this.root.classList.add('is-dragging');

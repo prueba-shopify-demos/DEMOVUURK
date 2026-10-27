@@ -1,6 +1,7 @@
 {%- comment -%}
   VUURK Unzip V2 (U1): reproductor de fotogramas controlado por arrastre.
-  Sin patrón de fotogramas usa los fotogramas de PRUEBA del theme (assets/vuurk-unzip-test-*.webp).
+  Sin patrón de fotogramas usa la secuencia del prototipo 3D del theme
+  (assets/vuurk-unzip-3d-{d,m}-01…24.webp, renderizada con tools/vuurk-3d).
   No sustituye a la sección VUURK · Envase 3D ni al prototipo V1.
 {%- endcomment -%}
 {%- liquid
@@ -10,7 +11,8 @@
   assign using_test = false
   if pattern_d == blank
     assign using_test = true
-    assign count = 48
+    assign test_prefix = 'vuurk-unzip-3d'
+    assign count = 24
   endif
   if count > 99
     assign pad = '000'
@@ -22,8 +24,8 @@
   assign last_n = count | prepend: pad | slice: digits, 3
 
   if using_test
-    assign fallback_d = 'vuurk-zipper-frame-d-' | append: last_n | append: '.webp' | asset_url
-    assign fallback_m = 'vuurk-zipper-frame-m-' | append: last_n | append: '.webp' | asset_url
+    assign fallback_d = test_prefix | append: '-d-' | append: last_n | append: '.webp' | asset_url
+    assign fallback_m = test_prefix | append: '-m-' | append: last_n | append: '.webp' | asset_url
   else
     assign fallback_d = pattern_d | replace: '{n}', last_n
     assign fallback_m = pattern_m | default: pattern_d | replace: '{n}', last_n
@@ -54,7 +56,7 @@
         <div class="vk__lead">{{ section.settings.text }}</div>
       {%- endif -%}
       {%- if using_test -%}
-        <p class="vk-unzip2__notice">Vista conceptual del packaging VUURK.</p>
+        <p class="vk-unzip2__notice">Prototipo 3D del envase. Diseño gráfico final pendiente.</p>
       {%- endif -%}
     </div>
 
@@ -114,7 +116,7 @@
           {%- for i in (1..count) -%}
             {%- assign n = i | prepend: pad | slice: digits, 3 -%}
             {%- if using_test -%}
-              {%- assign url = 'vuurk-zipper-frame-d-' | append: n | append: '.webp' | asset_url -%}
+              {%- assign url = test_prefix | append: '-d-' | append: n | append: '.webp' | asset_url -%}
             {%- else -%}
               {%- assign url = pattern_d | replace: '{n}', n -%}
             {%- endif -%}
@@ -125,7 +127,7 @@
           {%- for i in (1..count) -%}
             {%- assign n = i | prepend: pad | slice: digits, 3 -%}
             {%- if using_test -%}
-              {%- assign url = 'vuurk-zipper-frame-m-' | append: n | append: '.webp' | asset_url -%}
+              {%- assign url = test_prefix | append: '-m-' | append: n | append: '.webp' | asset_url -%}
             {%- else -%}
               {%- assign url = pattern_m | default: pattern_d | replace: '{n}', n -%}
             {%- endif -%}

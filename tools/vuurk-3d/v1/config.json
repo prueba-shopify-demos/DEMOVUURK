@@ -1,0 +1,70 @@
+{
+  "_nota": "Medidas PROVISIONALES del prototipo geométrico (Etapa 05). No son medidas oficiales de VUURK; reemplazar cuando el cliente entregue las reales. Unidades: metros y grados.",
+  "pouch": {
+    "width": 0.16,
+    "height": 0.23,
+    "gusset": 0.08,
+    "gusset_rise": 0.012,
+    "side_seal": 0.007,
+    "zipper_from_top": 0.022,
+    "hinge_below_zipper": 0.012,
+    "hinge_blend": 0.012,
+    "pinch_length": 0.008,
+    "lip_gap": 0.0013,
+    "seal_gap": 0.0003,
+    "zipper_ridge": 0.0006,
+    "film_thickness": 0.00025,
+    "grid_x": 121,
+    "grid_z_body": 60,
+    "grid_z_top": 90
+  },
+  "zipper": {
+    "track_radius": 0.001,
+    "ring_segments": 8
+  },
+  "opening": {
+    "keys": 20,
+    "front_angle_deg": 95,
+    "back_angle_deg": 15,
+    "lens_power": 0.7,
+    "full_amplitude_at": 0.6
+  },
+  "gummies": {
+    "count": 60,
+    "size": [
+      0.019,
+      0.016,
+      0.012
+    ],
+    "zone_below_zipper": [
+      0.004,
+      0.1
+    ],
+    "seed": 7,
+    "attempts": 40000
+  },
+  "camera": {
+    "lens_mm": 85,
+    "sensor_height_mm": 24,
+    "elevation_deg": 24,
+    "frame_height": 0.33,
+    "target_z_ratio": 0.5
+  },
+  "render": {
+    "width": 640,
+    "height": 360,
+    "samples": 64,
+    "seed": 1
+  },
+  "animation": {
+    "frame_start": 0,
+    "frame_end": 100
+  },
+  "states": [
+    0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ]
+}
