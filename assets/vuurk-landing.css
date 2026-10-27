@@ -698,7 +698,11 @@
 }
 
 .vk-stage__view--lateral .vk-pack__img {
-  max-height: 100%;
+  height: 520px;
+  width: auto;
+  max-height: none;
+  max-width: none;
+  object-fit: contain;
 }
 
 .vk-viewer__buy {
