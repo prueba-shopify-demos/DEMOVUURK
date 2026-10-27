@@ -362,6 +362,13 @@
     bottom: -4%;
   }
 }
+/* VUURK: ampliar envase sin alterar el centrado */
+@media (min-width: 900px) {
+  .vk-ef__center .vk-pack__img {
+    transform: scale(1.15);
+    transform-origin: center center;
+  }
+}
 /* FIN VUURK EF */
 
 /* ---------- 4. Características ---------- */
