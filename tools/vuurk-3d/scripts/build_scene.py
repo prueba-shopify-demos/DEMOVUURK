@@ -45,13 +45,30 @@ def principled(name, color, roughness, **inputs):
     return mat
 
 
-def film_material():
-    """Film satinado neutro (sin arte): capa de barniz suave, microrrugosidad
-    y estrías de sellado en las costuras laterales (|x| > semiancho interior)."""
-    mat = principled('VK_Film_Exterior_Neutro', (0.22, 0.22, 0.22), 0.38,
-                     **{'Coat Weight': 0.4, 'Coat Roughness': 0.18})
+def film_material(name, color, art_path=None, coat=0.4):
+    """Film satinado: capa de barniz suave, microrrugosidad y estrías de sellado
+    en las costuras laterales (|x| > semiancho interior). Con `art_path`, el color
+    base sale de la imagen del envase (UV ortográfica del frente); donde la imagen
+    es transparente (esquinas) queda el film liso de `color`."""
+    # Especular bajo: evita reflejos blancos en los bordes curvos (la imagen ya trae sus brillos).
+    mat = principled(name, color, 0.5, **{'Coat Weight': coat, 'Coat Roughness': 0.25,
+                                          'Specular IOR Level': 0.3})
     nt = mat.node_tree
     n = nt.nodes
+    if art_path:
+        img = bpy.data.images.load(art_path)
+        img.colorspace_settings.name = 'sRGB'
+        img.pack()  # el .blend queda autocontenido
+        tex = n.new('ShaderNodeTexImage')
+        tex.image = img
+        tex.interpolation = 'Cubic'
+        tex.extension = 'EXTEND'
+        mix = n.new('ShaderNodeMix')
+        mix.data_type = 'RGBA'
+        mix.inputs['A'].default_value = (*color, 1.0)
+        nt.links.new(tex.outputs['Alpha'], mix.inputs['Factor'])
+        nt.links.new(tex.outputs['Color'], mix.inputs['B'])
+        nt.links.new(mix.outputs['Result'], n['Principled BSDF'].inputs['Base Color'])
     coord = n.new('ShaderNodeTexCoord')
     xyz = n.new('ShaderNodeSeparateXYZ')
     nt.links.new(coord.outputs['Object'], xyz.inputs['Vector'])
@@ -108,7 +125,7 @@ def grid_z():
 
 # ---------- Bolsa: frente, trasera y fuelle ----------
 
-def build_pouch(mat_out, mat_in):
+def build_pouch(mat_front, mat_in, mat_back):
     nx = cfg['pouch']['grid_x']
     xs = [-P.W / 2 + P.W * i / (nx - 1) for i in range(nx)]
     zs = grid_z()
@@ -145,8 +162,22 @@ def build_pouch(mat_out, mat_in):
             a = base + k * nx + i
             faces.append((a, a + nx, a + nx + 1, a + 1))  # normal hacia abajo
 
-    obj = mesh_object('VK_Pouch', verts, faces, [mat_out, mat_in])
-    obj['vk_note'] = 'Prototipo geométrico. Medidas provisionales (config.json).'
+    # Materiales: 0 frente (arte), 1 interior, 2 trasera y fuelle, 3 interior
+    # (el Solidify suma 1 al índice para la cáscara interior y el borde).
+    obj = mesh_object('VK_Pouch', verts, faces, [mat_front, mat_in, mat_back, mat_in])
+    obj['vk_note'] = 'Prototipo. Arte frontal de la imagen oficial; medidas provisionales (config.json).'
+    mesh = obj.data
+    n_front = (len(zs) - 1) * (nx - 1)
+    mesh.polygons.foreach_set('material_index', [0] * n_front + [2] * (len(faces) - n_front))
+    # UV ortográfica del frente: el recorte del arte cubre todo el panel, sin deformar.
+    uv = mesh.uv_layers.new(name='UVMap')
+    loop_v = [0] * len(mesh.loops)
+    mesh.loops.foreach_get('vertex_index', loop_v)
+    flat = []
+    for vi in loop_v:
+        x, _, z = verts[vi]
+        flat += [(x + P.W / 2) / P.W, z / P.H]
+    uv.data.foreach_set('uv', flat)
     solid = obj.modifiers.new('VK_Film', 'SOLIDIFY')
     solid.thickness = P.thick
     solid.offset = -1.0          # hacia adentro: la cara exterior no se mueve
@@ -234,23 +265,34 @@ def build_control(scene):
 def build_gummies(mat):
     g = cfg['gummies']
     sx, sy, sz = (v / 2 for v in g['size'])
-    bm = bmesh.new()
-    bmesh.ops.create_icosphere(bm, subdivisions=3, radius=1.0)
-    for v in bm.verts:
-        # Forma genérica de gummy: elipsoide algo aplanado en la base.
-        z = v.co.z
-        v.co = Vector((v.co.x * sx, v.co.y * sy, (z if z > 0 else z * 0.75) * sz))
-    mesh = bpy.data.meshes.new('VK_Gummy_Mesh')
-    bm.to_mesh(mesh)
-    bm.free()
-    for poly in mesh.polygons:
-        poly.use_smooth = True
-    mesh.materials.append(mat)
+    rng = random.Random(g['seed'])
+
+    def gummy_mesh(k):
+        # Caramelo de goma: bloque redondeado (superelipsoide), base más plana
+        # y pequeñas irregularidades de moldeado, distintas en cada variante.
+        bm = bmesh.new()
+        bmesh.ops.create_icosphere(bm, subdivisions=4, radius=1.0)
+        ph = [rng.uniform(0, math.tau) for _ in range(3)]
+        for v in bm.verts:
+            d = v.co.normalized()
+            pn = (abs(d.x) ** 3 + abs(d.y) ** 3 + abs(d.z) ** 3) ** (1 / 3)
+            d = d / pn
+            bump = 1.0 + 0.035 * math.sin(5 * d.x + ph[0]) * math.sin(4 * d.y + ph[1]) + 0.02 * math.sin(6 * d.z + ph[2])
+            z = d.z if d.z > 0 else d.z * 0.7
+            v.co = Vector((d.x * sx, d.y * sy, z * sz)) * bump
+        mesh = bpy.data.meshes.new(f'VK_Gummy_Mesh_{k}')
+        bm.to_mesh(mesh)
+        bm.free()
+        for poly in mesh.polygons:
+            poly.use_smooth = True
+        mesh.materials.append(mat)
+        return mesh
+
+    meshes = [gummy_mesh(k) for k in range(3)]
 
     coll = bpy.data.collections.new('VK_Gummies')
     bpy.context.scene.collection.children.link(coll)
-    rng = random.Random(g['seed'])
-    r_max = max(sx, sy, sz) * 1.1
+    r_max = max(sx, sy, sz) * 1.15
     z_top = P.Zz - g['zone_below_zipper'][0]
     z_low = P.Zz - g['zone_below_zipper'][1]
     # Candidatos válidos (dentro del film cerrado), ordenados de arriba hacia abajo:
@@ -277,10 +319,10 @@ def build_gummies(mat):
         if any((Vector((x, y, z)) - c).length < (rr + cr) * 0.78 for c, cr in placed):
             continue
         placed.append((Vector((x, y, z)), rr))
-        obj = bpy.data.objects.new(f'VK_Gummy_{len(placed):02d}', mesh)
+        obj = bpy.data.objects.new(f'VK_Gummy_{len(placed):02d}', meshes[len(placed) % len(meshes)])
         obj.location = (x, y, z)
         obj.rotation_euler = Euler((rng.uniform(-0.6, 0.6), rng.uniform(-0.6, 0.6), rng.uniform(0, math.tau)))
-        obj.scale = (s, s, s)
+        obj.scale = (s * rng.uniform(0.93, 1.07), s * rng.uniform(0.93, 1.07), s * rng.uniform(0.9, 1.05))
         coll.objects.link(obj)
     return len(placed)
 
@@ -319,9 +361,14 @@ def build_studio(scene):
     area('VK_Key', (-0.5, -0.6, 0.45), 9, 0.7)
     area('VK_Fill', (0.6, -0.7, 0.2), 2.5, 0.9)
     area('VK_Top', (0.0, -0.15, 0.7), 4, 0.5)
-    area('VK_Strip_L', (-0.35, 0.22, 0.3), 5, 0.08, 0.6, aim=Vector((0.0, 0.0, 0.34)), spread=40)
-    area('VK_Strip_R', (0.35, 0.22, 0.3), 5, 0.08, 0.6, aim=Vector((0.0, 0.0, 0.34)), spread=40)
+    area('VK_Strip_L', (-0.35, 0.22, 0.3), 2.5, 0.08, 0.6, aim=Vector((0.0, 0.0, 0.5)), spread=28)
+    area('VK_Strip_R', (0.35, 0.22, 0.3), 2.5, 0.08, 0.6, aim=Vector((0.0, 0.0, 0.5)), spread=28)
     area('VK_Backglow', (0.0, 0.25, 0.08), 1.0, 0.4, aim=Vector((0.0, 0.8, 0.6)), spread=60)
+
+    # Luz exclusiva de las gummies (light linking): las ilumina dentro de la boca
+    # sin aclarar el envase. El envase sigue proyectando sombra sobre ellas.
+    gl = area('VK_Gummy_Light', (0.0, -0.14, P.Zz + 0.22), 1.0, 0.35, aim=Vector((0.0, 0.0, P.Zz - 0.015)))
+    gl.light_linking.receiver_collection = bpy.data.collections['VK_Gummies']
 
     world = bpy.data.worlds.new('VK_World')
     world.use_nodes = True
@@ -365,21 +412,29 @@ def setup_render(scene):
 
 def main():
     scene = reset_scene()
-    mat_out = film_material()
+    art = os.path.join(G.ROOT, cfg['art']['front'])
+    # Barniz bajo en el frente: la imagen oficial ya trae sus brillos y pliegues.
+    mat_front = film_material('VK_Film_Frente_Arte', (0.012, 0.012, 0.013), art, coat=0.12)
+    mat_back = film_material('VK_Film_Trasera', (0.012, 0.012, 0.013), coat=0.2)
     mat_in = principled('VK_Film_Interior', (0.018, 0.018, 0.02), 0.55)
     mat_zip = principled('VK_Zipper', (0.035, 0.035, 0.038), 0.28)
-    mat_gum = principled('VK_Gummy', (0.055, 0.006, 0.014), 0.45,
-                         **{'Subsurface Weight': 0.2, 'Subsurface Scale': 0.004})
+    # Goma de frutos rojos oscura y traslúcida (dispersión subsuperficial),
+    # con recubrimiento de azúcar: superficie mate con grano fino y leve sheen.
+    mat_gum = principled('VK_Gummy', (0.085, 0.006, 0.02), 0.55,
+                         **{'Subsurface Weight': 0.7, 'Subsurface Scale': 0.003,
+                            'Subsurface Radius': (1.0, 0.15, 0.2),
+                            'Sheen Weight': 0.1, 'Sheen Roughness': 0.6,
+                            'Sheen Tint': (1.0, 0.8, 0.8, 1.0)})
     nt = mat_gum.node_tree
     noise = nt.nodes.new('ShaderNodeTexNoise')
-    noise.inputs['Scale'].default_value = 900.0
+    noise.inputs['Scale'].default_value = 1800.0
     bump = nt.nodes.new('ShaderNodeBump')
-    bump.inputs['Strength'].default_value = 0.12
+    bump.inputs['Strength'].default_value = 0.3
     nt.links.new(noise.outputs['Fac'], bump.inputs['Height'])
     nt.links.new(bump.outputs['Normal'], nt.nodes['Principled BSDF'].inputs['Normal'])
 
     ctrl = build_control(scene)
-    pouch, rest, sides = build_pouch(mat_out, mat_in)
+    pouch, rest, sides = build_pouch(mat_front, mat_in, mat_back)
     add_open_keys(pouch, rest, sides, ctrl)
     zipper, zrest, zsides = build_zipper(mat_zip)
     add_open_keys(zipper, zrest, zsides, ctrl)

@@ -1,13 +1,13 @@
 {
-  "_nota": "v2 · Medidas PROVISIONALES del prototipo. No son medidas oficiales de VUURK; reemplazar cuando el cliente entregue las reales. Unidades: metros y grados. La v1 está congelada en v1/config.json.",
+  "_nota": "v3 · Textura frontal tomada de la imagen oficial 'VUURK Energy Gummies Berry Pouch.png'. Proporciones del envase tomadas de esa imagen (860×1406 px); medidas absolutas PROVISIONALES. v1 congelada en v1/; salidas v2 en out/v2/.",
   "pouch": {
     "width": 0.16,
-    "height": 0.23,
+    "height": 0.2615,
     "gusset": 0.08,
     "gusset_rise": 0.012,
     "side_seal": 0.008,
-    "zipper_from_top": 0.022,
-    "hinge_below_zipper": 0.016,
+    "zipper_from_top": 0.0329,
+    "hinge_below_zipper": 0.014,
     "pinch_length": 0.008,
     "lip_gap": 0.0013,
     "seal_gap": 0.0003,
@@ -25,13 +25,15 @@
   },
   "opening": {
     "keys": 20,
-    "front_curl_deg": 110,
+    "front_curl_deg": 130,
     "back_curl_deg": 22,
     "curl_power": 0.4,
     "unpinch_at": 0.3,
     "edge_ripple": 0.0015,
-    "lens_power": 0.7,
-    "full_amplitude_at": 0.6
+    "lens_power": 1.3,
+    "full_amplitude_at": 0.6,
+    "seal_curl_min": 0.35,
+    "seal_curl_falloff": 0.18
   },
   "gummies": {
     "count": 60,
@@ -50,8 +52,8 @@
   "camera": {
     "lens_mm": 85,
     "sensor_height_mm": 24,
-    "elevation_deg": 20,
-    "frame_height": 0.285,
+    "elevation_deg": 23,
+    "frame_height": 0.324,
     "target_z_ratio": 0.53
   },
   "render": {
@@ -66,10 +68,9 @@
   },
   "states": [
     0,
-    0.5,
     1.0
   ],
-  "name": "v2",
+  "name": "v3_1",
   "sequence": {
     "frames": 24,
     "width": 1200,
@@ -83,6 +84,17 @@
       512,
       640
     ],
-    "theme_prefix": "vuurk-unzip-3d"
+    "theme_prefix": "vuurk-unzip-berry"
+  },
+  "art": {
+    "source": "VUURK Energy Gummies Berry Pouch.png",
+    "front": "art/vuurk_front_berry_pouch.png",
+    "bbox_px": [
+      84,
+      71,
+      945,
+      1478
+    ],
+    "zipper_center_px_from_top": 177
   }
 }

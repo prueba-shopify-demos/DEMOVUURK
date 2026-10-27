@@ -181,11 +181,11 @@
 /* VUURK ZIPPER — CONTROL SOBRE EL CIERRE */
 
 /* El control recorre el zipper del prototipo 3D (proyección de cámara:
-   tools/vuurk-3d/out/v2/seq/meta.json). El tirador marca el frente de apertura. */
+   tools/vuurk-3d/out/v3_1/seq/meta.json). El tirador marca el frente de apertura. */
 .vk-unzip2__track {
-  left: 36.1%;
-  right: 36.1%;
-  top: 20.9%;
+  left: 37.8%;
+  right: 37.8%;
+  top: 23.8%;
   height: 48px;
   margin-top: -24px;
   background: transparent;
@@ -212,9 +212,9 @@
   inset: 12px;
 }
 
-/* Indicación fuera del centro del logotipo. */
+/* Indicación sobre el fondo, por encima del envase (no tapa el logotipo). */
 .vk-unzip2__hint {
-  top: 29%;
+  top: 6%;
   font-size: 12px;
   letter-spacing: .04em;
   pointer-events: none;
@@ -223,13 +223,13 @@
 /* Ajustes para celulares. */
 @media (max-width: 749px) {
   .vk-unzip2__track {
-    left: 17.5%;
-    right: 17.5%;
-    top: 20.9%;
+    left: 21.3%;
+    right: 21.3%;
+    top: 23.8%;
   }
 
   .vk-unzip2__hint {
-    top: 30%;
+    top: 6%;
     font-size: 11px;
     padding-inline: 12px;
   }

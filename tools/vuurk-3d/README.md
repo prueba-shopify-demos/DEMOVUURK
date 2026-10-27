@@ -1,4 +1,7 @@
-# VUURK · Pipeline 3D (prototipo, Etapa 05 · v2)
+# VUURK · Pipeline 3D (Etapa 05 · v3.1)
+
+> **v3.1 (actual, la que usa el theme):** frente con la imagen oficial `VUURK Energy Gummies Berry Pouch.png`, recortada a la silueta con `scripts/prepare_art.py` y mapeada 1:1 (UV ortográfica). Incluye gummies de goma traslúcidas con luz propia (light linking) y solapa con curvatura reducida junto a las costuras. La secuencia se exporta como `assets/vuurk-unzip-berry-{d,m}-01…24.webp`.
+> La imagen fuente y su recorte (`art/`) **no se versionan**: para regenerar, colocar la imagen en `tools/vuurk-3d/` y ejecutar `python3 scripts/prepare_art.py` antes de `build_scene.py`.
 
 > **v2 (actual):** solapa curva, film satinado con microrrugosidad, costuras con estrías de sellado, arrugas estáticas fuera de la zona del logotipo e iluminación de producto. Salidas en `out/v2/` y `out/vuurk_pouch_v2.blend`.
 > **v1** está congelada en `v1/` (scripts y config) y sus salidas en `out/proto/` y `out/vuurk_pouch_proto.blend`. El primer intento descartado de v2 está en `out/v2-intento1/`.

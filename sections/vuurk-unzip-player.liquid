@@ -1,7 +1,7 @@
 {%- comment -%}
   VUURK Unzip V2 (U1): reproductor de fotogramas controlado por arrastre.
-  Sin patrón de fotogramas usa la secuencia del prototipo 3D del theme
-  (assets/vuurk-unzip-3d-{d,m}-01…24.webp, renderizada con tools/vuurk-3d).
+  Sin patrón de fotogramas usa la secuencia 3D del envase con el arte oficial
+  (assets/vuurk-unzip-berry-{d,m}-01…24.webp, renderizada con tools/vuurk-3d).
   No sustituye a la sección VUURK · Envase 3D ni al prototipo V1.
 {%- endcomment -%}
 {%- liquid
@@ -11,7 +11,7 @@
   assign using_test = false
   if pattern_d == blank
     assign using_test = true
-    assign test_prefix = 'vuurk-unzip-3d'
+    assign test_prefix = 'vuurk-unzip-berry'
     assign count = 24
   endif
   if count > 99
@@ -56,7 +56,7 @@
         <div class="vk__lead">{{ section.settings.text }}</div>
       {%- endif -%}
       {%- if using_test -%}
-        <p class="vk-unzip2__notice">Prototipo 3D del envase. Diseño gráfico final pendiente.</p>
+        <p class="vk-unzip2__notice">Visualización 3D interactiva del envase VUURK.</p>
       {%- endif -%}
     </div>
 

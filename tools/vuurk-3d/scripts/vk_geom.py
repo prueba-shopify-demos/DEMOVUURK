@@ -63,6 +63,8 @@ class Pouch:
         self.unpinch_at = o['unpinch_at']
         self.ripple = o['edge_ripple']
         self.lens_power = o['lens_power']
+        self.seal_curl_min = o['seal_curl_min']
+        self.seal_curl_falloff = o['seal_curl_falloff']
         self.full_at = o['full_amplitude_at']
 
     # ---------- Forma en reposo (cerrada) ----------
@@ -141,6 +143,10 @@ class Pouch:
         h = z - self.z_hinge
         L = self.H - self.z_hinge
         total = (self.front_curl if side < 0 else self.back_curl) * op
+        # Junto a las costuras la solapa se curva menos: evita esquinas retorcidas
+        # que miran de costado hacia la luz principal.
+        edge = min(self.u(x), 1.0 - self.u(x))
+        total *= self.seal_curl_min + (1.0 - self.seal_curl_min) * smoothstep(0.0, self.seal_curl_falloff, edge)
         out, up, phi = self.curl(h, total)
         # Ondulación leve del borde abierto (el film no queda perfectamente recto).
         out += self.ripple * op * (h / L) ** 2 * math.sin(x * math.tau / 0.032 + 0.4)
