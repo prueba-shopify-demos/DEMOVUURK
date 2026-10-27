@@ -798,3 +798,85 @@
 #shopify-section-header .header-wrapper {
   position: static !important;
 }
+
+
+/* VUURK MOBILE FIRST — HERO V1 */
+@media (max-width: 599px) {
+  .vk-hero__grid {
+    padding-block: 24px 36px;
+    gap: 0;
+  }
+
+  .vk-hero__top {
+    position: relative;
+    z-index: 2;
+  }
+
+  .vk-hero .vk__eyebrow {
+    margin-bottom: 12px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .vk-hero .vk__h1 {
+    font-size: clamp(42px, 12vw, 58px);
+    line-height: 0.96;
+  }
+
+  .vk-hero__media {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1 / 1.08;
+    max-height: 390px;
+    margin: 8px auto 0;
+  }
+
+  .vk-hero__media .vk-pack__img {
+    max-width: 88%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .vk-hero__bottom {
+    margin-top: 8px;
+  }
+
+  .vk-hero .vk__lead {
+    margin-top: 0;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .vk-hero .vk__actions {
+    margin-top: 20px;
+    gap: 10px;
+  }
+
+  .vk-hero .vk-btn {
+    min-height: 52px;
+    font-size: 16px;
+  }
+
+  .vk-hero .vk-chips {
+    margin-top: 20px;
+    gap: 6px;
+  }
+
+  .vk-hero .vk-chips li {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 359px) {
+  .vk-hero .vk__h1 {
+    font-size: 40px;
+  }
+
+  .vk-hero__media {
+    max-height: 330px;
+  }
+}
