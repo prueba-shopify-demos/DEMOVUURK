@@ -875,22 +875,15 @@
   position: static !important;
 }
 
-/* VUURK VIEWER: escala exclusiva de vista lateral */
+/* VUURK: vista lateral con escala proporcional */
 @media (min-width: 900px) {
-  .vk-stage__view:nth-of-type(3) .vk-pack__img {
-    transform: scale(1.65) !important;
-    transform-origin: center center !important;
-  }
-}
-
-/* VUURK VIEWER: tamaño lateral corregido V2 */
-@media (min-width: 900px) {
-  .vk-stage__view:nth-of-type(3) .vk-pack__img {
+  .vk-stage__view--lateral .vk-pack__img {
     width: auto !important;
-    height: 540px !important;
+    height: 510px !important;
     max-width: none !important;
     max-height: none !important;
     object-fit: contain !important;
-    transform: none !important;
+    transform: scale(1.12) !important;
+    transform-origin: center center !important;
   }
 }
