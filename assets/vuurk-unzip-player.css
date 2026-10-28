@@ -255,17 +255,21 @@
     position: absolute;
     aspect-ratio: 808 / 450;
     background: var(--vk-splash) center / contain no-repeat;
+    /* Borde interno (junto al envase) fundido: la salpicadura nace detrás del envase
+       sin la línea vertical de su contorno. En ::before el espejo invierte el fundido. */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 25%);
+    mask-image: linear-gradient(to right, transparent, #000 25%);
   }
   /* Izquierda: espejada, la parte densa junto al envase y las gotas hacia afuera. */
   .vk-unzip2__splash::before {
-    right: 62%;
+    right: 65%;
     top: 36%;
     width: 72%;
     transform: scaleX(-1);
   }
   /* Derecha: como en el envase, más arriba y algo más chica para no ser simétrica. */
   .vk-unzip2__splash::after {
-    left: 64%;
+    left: 65%;
     top: 22%;
     width: 64%;
   }
