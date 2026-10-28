@@ -2,6 +2,8 @@
   VUURK Unzip V2 (U1): reproductor de fotogramas controlado por arrastre.
   Sin patrón de fotogramas usa la secuencia 3D del envase con el arte oficial
   (assets/vuurk-unzip-berry-{d,m}-01…24.webp, renderizada con tools/vuurk-3d).
+  En escritorio, cada fotograma se recorta con la silueta del envase
+  (assets/vuurk-unzip-berry-matte-01…24.webp) para quitar el fondo gris de estudio.
   Al terminar la apertura, una capa independiente hace salir gummies de la boca
   (assets/vuurk-gummy-01…06.webp, tools/vuurk-3d/scripts/render_gummies.py).
   No sustituye a la sección VUURK · Envase 3D ni al prototipo V1.
@@ -74,6 +76,12 @@
     </div>
 
     <div class="vk-unzip2__player" data-vk-unzip2-player hidden>
+      {%- comment -%} Salpicadura del arte oficial detrás del envase (solo escritorio, CSS). {%- endcomment -%}
+      <div
+        class="vk-unzip2__splash"
+        style="--vk-splash: url({{ 'vuurk-splash.webp' | asset_url }})"
+        aria-hidden="true"
+      ></div>
       <div class="vk-unzip2__stage" data-vk-unzip2-stage>
         <canvas class="vk-unzip2__canvas" data-vk-unzip2-canvas aria-hidden="true"></canvas>
         <div class="vk-unzip2__burst" data-vk-unzip2-burst aria-hidden="true"></div>
@@ -125,6 +133,14 @@
             {%- endif -%}
             {{ url | json }}{% unless forloop.last %},{% endunless %}
           {%- endfor -%}
+        ],
+        "mattes": [
+          {%- if using_test -%}
+            {%- for i in (1..count) -%}
+              {%- assign n = i | prepend: pad | slice: digits, 3 -%}
+              {{ test_prefix | append: '-matte-' | append: n | append: '.webp' | asset_url | json }}{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          {%- endif -%}
         ],
         "gummies": [
           {%- for i in (1..6) -%}

@@ -16,6 +16,9 @@
     desktop: { x: 0.1729, y: 0.04, w: 0.6542, h: 0.92 },
     mobile: { x: 0, y: 0, w: 1, h: 1 }
   };
+  // Esquina (px del fotograma de 1200×640) de las siluetas desktop
+  // (assets/vuurk-unzip-berry-matte-XX.webp, tools/vuurk-3d/scripts/export_matte.py).
+  const MATTE_ORIGIN = { x: 432, y: 65 };
   // Boca del envase abierto en el último fotograma, en fracciones del escenario
   // (con VIEW ya aplicado). El móvil es el recorte central de 512 px del render de
   // 1200 px (meta.json de tools/vuurk-3d). lateral: desplazamiento horizontal de cada
@@ -227,6 +230,12 @@
       this.count = set.length;
       this.blobs = new Array(this.count).fill(null);
       this.bitmaps = new Map();
+      // Siluetas del envase (solo escritorio): dejan ver el fondo de la sección en lugar
+      // del gris de estudio que traen los fotogramas.
+      const mattes = this.sets.mattes;
+      this.matteUrls = set === this.sets.desktop && mattes && mattes.length === set.length ? mattes : null;
+      this.matteBlobs = new Array(this.count).fill(null);
+      this.mattes = new Map();
       this.pending = new Set();
       this.queue = [];
       this.drawn = -1;
@@ -311,16 +320,20 @@
       this.pending.add(index);
       this.stats.requested++;
       const urls = this.urls;
-      fetch(urls[index], { signal: this.controller.signal })
-        .then((res) => {
+      const mattes = this.matteUrls;
+      const get = (url) =>
+        fetch(url, { signal: this.controller.signal }).then((res) => {
           if (!res.ok) throw new Error(res.status);
           return res.blob();
-        })
-        .then((blob) => {
+        });
+      // Con silueta, el fotograma cuenta como cargado cuando llegan los dos.
+      Promise.all([get(urls[index]), mattes ? get(mattes[index]) : null])
+        .then(([blob, matte]) => {
           if (urls !== this.urls) return;
           this.blobs[index] = blob;
+          this.matteBlobs[index] = matte;
           this.stats.loaded++;
-          this.stats.bytes += blob.size;
+          this.stats.bytes += blob.size + (matte ? matte.size : 0);
           this.pending.delete(index);
           this.render();
           this.next();
@@ -341,14 +354,22 @@
         if (!keep.has(i) && bmp !== 'pending') {
           if (bmp.close) bmp.close();
           this.bitmaps.delete(i);
+          const matte = this.mattes.get(i);
+          if (matte && matte.close) matte.close();
+          this.mattes.delete(i);
         }
       });
       keep.forEach((i) => {
         if (!this.blobs[i] || this.bitmaps.has(i)) return;
         this.bitmaps.set(i, 'pending');
-        createImageBitmap(this.blobs[i])
-          .then((bmp) => {
-            if (this.bitmaps.get(i) !== 'pending') return bmp.close();
+        const matte = this.matteBlobs[i];
+        Promise.all([createImageBitmap(this.blobs[i]), matte ? createImageBitmap(matte) : null])
+          .then(([bmp, matteBmp]) => {
+            if (this.bitmaps.get(i) !== 'pending') {
+              if (matteBmp) matteBmp.close();
+              return bmp.close();
+            }
+            if (matteBmp) this.mattes.set(i, matteBmp);
             this.bitmaps.set(i, bmp);
             let decoded = 0;
             this.bitmaps.forEach((b) => b !== 'pending' && decoded++);
@@ -393,10 +414,35 @@
         const sh = bmp.height * v.h;
         const r = coverRect(sw, sh, this.canvas.width, this.canvas.height);
         this.ctx.drawImage(bmp, bmp.width * v.x, bmp.height * v.y, sw, sh, r.x, r.y, r.w, r.h);
+        const matte = this.mattes.get(index);
+        if (matte) this.cutout(matte, bmp.width * v.x, bmp.height * v.y, r.w / sw, r);
         this.drawn = index;
         this.stats.draws++;
       }
       this.root.classList.toggle('is-loading', index < 0);
+    }
+
+    // Deja solo el envase: la silueta del mismo fotograma borra el fondo gris.
+    cutout(matte, sx, sy, scale, r) {
+      const ctx = this.ctx;
+      const x = r.x + (MATTE_ORIGIN.x - sx) * scale;
+      const y = r.y + (MATTE_ORIGIN.y - sy) * scale;
+      const w = matte.width * scale;
+      const h = matte.height * scale;
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(matte, x, y, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+      // Fuera del rectángulo de la silueta todo es fondo (destination-in no siempre lo borra).
+      const cw = this.canvas.width;
+      const ch = this.canvas.height;
+      const left = Math.ceil(x);
+      const top = Math.ceil(y);
+      const right = Math.floor(x + w);
+      const bottom = Math.floor(y + h);
+      ctx.clearRect(0, 0, cw, top);
+      ctx.clearRect(0, bottom, cw, ch - bottom);
+      ctx.clearRect(0, top, left, bottom - top);
+      ctx.clearRect(right, top, cw - right, bottom - top);
     }
 
     setProgress(value) {
@@ -549,6 +595,7 @@
     coverRect,
     easeOutCubic,
     VIEW,
+    MATTE_ORIGIN,
     MOUTH,
     GUMMIES,
     random,

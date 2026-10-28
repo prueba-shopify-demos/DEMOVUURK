@@ -53,17 +53,30 @@ class FakeElement {
 }
 
 // queries: media queries activas, p. ej. ['(max-width: 749px)'].
-function setup(queries = []) {
+// withMattes: la sección trae las siluetas desktop (como la secuencia BERRY FUSION).
+function setup(queries = [], { withMattes = false } = {}) {
   const els = {};
   const sel = (s) => (els[s] ||= new FakeElement(s));
   const urls = Array.from({ length: FRAMES }, (_, i) => `/f-${i + 1}.webp`);
-  sel('[data-vk-unzip2-frames]').textContent = JSON.stringify({ desktop: urls, mobile: urls, gummies: SPRITES });
+  const mattes = withMattes ? Array.from({ length: FRAMES }, (_, i) => `/matte-${i + 1}.webp`) : [];
+  const mobileUrls = urls.map((u) => u.replace('/f-', '/m-'));
+  sel('[data-vk-unzip2-frames]').textContent = JSON.stringify({ desktop: urls, mobile: mobileUrls, mattes, gummies: SPRITES });
   const track = new FakeElement('track');
   track.width = TRACK_WIDTH;
   sel('[data-vk-unzip2-handle]').parentElement = track;
   const canvas = sel('[data-vk-unzip2-canvas]');
   const draws = [];
-  canvas.getContext = () => ({ drawImage: (bmp) => draws.push(bmp.index) });
+  const ops = [];
+  const ctx = {
+    globalCompositeOperation: 'source-over',
+    drawImage(bmp) {
+      draws.push(bmp.index);
+      ops.push({ op: this.globalCompositeOperation, img: bmp.url });
+    },
+    clearRect: (...rect) => ops.push({ op: 'clear', rect })
+  };
+  canvas.getContext = () => ctx;
+  const fetched = [];
   const root = new FakeElement('root');
   root.querySelector = sel;
 
@@ -86,8 +99,17 @@ function setup(queries = []) {
       disconnect() {}
     },
     AbortController: class { constructor() { this.signal = {}; } abort() {} },
-    fetch: async (url) => ({ ok: true, blob: async () => ({ size: 1000, url }) }),
-    createImageBitmap: async (blob) => ({ width: 1200, height: 640, index: urls.indexOf(blob.url), close() {} }),
+    fetch: async (url) => {
+      fetched.push(url);
+      return { ok: true, blob: async () => ({ size: 1000, url }) };
+    },
+    createImageBitmap: async (blob) => ({
+      width: blob.url.includes('matte') ? 336 : 1200,
+      height: blob.url.includes('matte') ? 526 : 640,
+      index: Math.max(urls.indexOf(blob.url), mobileUrls.indexOf(blob.url)),
+      url: blob.url,
+      close() {}
+    }),
   };
   vm.runInNewContext(code, sandbox);
   const player = new sandbox.module.exports.Player(root);
@@ -103,7 +125,7 @@ function setup(queries = []) {
   };
   // Animaciones de gummies activas (no canceladas).
   const running = () => sel('[data-vk-unzip2-burst]').children.flatMap((img) => img.animations).filter((a) => !a.cancelled);
-  return { root, player, sel, draws, flushAsync, flushAnimation, running };
+  return { root, player, sel, draws, ops, ctx, fetched, flushAsync, flushAnimation, running };
 }
 
 const drag = (stage, pointerType, fromX, toX) => {
@@ -254,4 +276,29 @@ test('la primera interacción detiene la invitación del tirador', async () => {
   assert.ok(!root.classList.contains('is-touched'));
   sel('[data-vk-unzip2-handle]').dispatch('keydown', { key: 'ArrowRight' });
   assert.ok(root.classList.contains('is-touched'));
+});
+
+test('escritorio: cada fotograma se recorta con su silueta (sin el gris de estudio)', async () => {
+  const { player, sel, ops, ctx, fetched, flushAsync } = setup([], { withMattes: true });
+  await flushAsync();
+  assert.equal(fetched.filter((u) => u.includes('/matte-')).length, FRAMES);
+  assert.equal(player.drawn, 0);
+  const cut = ops.filter((o) => o.op === 'destination-in');
+  assert.equal(cut.at(-1).img, '/matte-1.webp');
+  assert.ok(ops.filter((o) => o.op === 'clear').length >= 4);
+  assert.equal(ctx.globalCompositeOperation, 'source-over');
+  // Abrir: el último fotograma usa la última silueta.
+  sel('[data-vk-unzip2-handle]').dispatch('keydown', { key: 'End' });
+  await flushAsync();
+  assert.equal(player.drawn, FRAMES - 1);
+  assert.equal(ops.filter((o) => o.op === 'destination-in').at(-1).img, `/matte-${FRAMES}.webp`);
+});
+
+test('móvil: no descarga ni aplica siluetas', async () => {
+  const { player, ops, fetched, flushAsync } = setup(['(max-width: 749px)'], { withMattes: true });
+  await flushAsync();
+  assert.equal(player.drawn, 0);
+  assert.ok(fetched.length > 0);
+  assert.ok(fetched.every((u) => !u.includes('matte')));
+  assert.ok(ops.every((o) => o.op === 'source-over'));
 });

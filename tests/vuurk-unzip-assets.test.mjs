@@ -40,8 +40,13 @@ for (const [kind, size] of [['d', [1200, 640]], ['m', [512, 640]]]) {
   });
 }
 
-// VP8X: bit de canal alfa en el byte de opciones.
-const webpHasAlpha = (buf) => buf.toString('ascii', 12, 16) === 'VP8X' && (buf[20] & 0x10) !== 0;
+// Canal alfa: VP8X lo indica en el byte de opciones; VP8L (sin pérdida), en el bit 28 del encabezado.
+const webpHasAlpha = (buf) => {
+  const chunk = buf.toString('ascii', 12, 16);
+  if (chunk === 'VP8X') return (buf[20] & 0x10) !== 0;
+  if (chunk === 'VP8L') return ((buf.readUInt32LE(21) >>> 28) & 1) === 1;
+  return false;
+};
 
 test('sprites de gummies: 6, 160×160 y con transparencia', () => {
   assert.match(liquid, /'vuurk-gummy-0' \| append: i/);
@@ -64,4 +69,37 @@ test('sin textos explicativos ni botones Abrir/Reiniciar', () => {
   for (const gone of ['open_label', 'reset_label', '"hint"', 'Deslizá para abrir el envase']) {
     assert.ok(!home.includes(gone), `templates/index.json todavía tiene ${gone}`);
   }
+});
+
+test('salpicadura de escritorio: existe con transparencia y solo se usa en escritorio', () => {
+  assert.match(liquid, /'vuurk-splash\.webp' \| asset_url/);
+  const buf = readFileSync(new URL('assets/vuurk-splash.webp', root));
+  assert.deepEqual(webpSize(buf), [808, 450]);
+  assert.ok(webpHasAlpha(buf));
+  // La imagen solo se pide dentro del bloque de escritorio; en móvil la capa no se muestra.
+  const css = readFileSync(new URL('assets/vuurk-unzip-player.css', root), 'utf8');
+  assert.match(css, /\.vk-unzip2__splash \{ display: none; \}/);
+  const desktop = css.slice(css.indexOf('VUURK DESKTOP — SALPICADURA'));
+  assert.ok(desktop.includes('@media (min-width: 750px)'));
+  assert.equal(css.split('var(--vk-splash)').length - 1, 1);
+  assert.ok(desktop.includes('var(--vk-splash)'));
+});
+
+test('siluetas desktop: 24, con transparencia, del mismo tamaño y alineadas con el envase', () => {
+  assert.match(liquid, /test_prefix \| append: '-matte-'/);
+  const code = readFileSync(new URL('assets/vuurk-unzip-player.js', root), 'utf8');
+  const [, ox, oy] = code.match(/MATTE_ORIGIN = \{ x: (\d+), y: (\d+) \}/).map(Number);
+  let size;
+  for (let i = 1; i <= count; i++) {
+    const name = `assets/${prefix}-matte-${String(i).padStart(2, '0')}.webp`;
+    const url = new URL(name, root);
+    assert.ok(existsSync(url), `falta ${name}`);
+    const buf = readFileSync(url);
+    assert.ok(webpHasAlpha(buf), `${name} sin transparencia`);
+    size ||= webpSize(buf);
+    assert.deepEqual(webpSize(buf), size, name);
+  }
+  // Envase en el fotograma de 1200×640: x 434–766, y 67 (abierto)–589.
+  assert.ok(ox <= 434 && oy <= 67 && ox + size[0] >= 766 && oy + size[1] >= 589);
+  assert.ok(ox + size[0] <= 1200 && oy + size[1] <= 640);
 });
