@@ -190,3 +190,25 @@
 }
 
 /* FIN VUURK ZIPPER */
+
+/* VUURK DESKTOP — ENVASE CON PROTAGONISMO
+   El reproductor dibuja en escritorio un recorte 4:3 del fotograma centrado en el
+   envase (VIEW.desktop en vuurk-unzip-player.js): escenario 4:3, más angosto y
+   alto, que entra en la pantalla. El zipper se reubica con la misma conversión.
+   Móvil (≤ 749 px) no cambia. */
+@media (min-width: 750px) {
+  .vk-unzip2__stage,
+  .vk-unzip2__fallback img {
+    aspect-ratio: 4 / 3;
+    width: min(100%, 960px);
+    width: min(100%, 960px, max(560px, calc((100svh - 160px) * 4 / 3)));
+    margin-inline: auto;
+  }
+  .vk-unzip2__fallback img { display: block; }
+
+  .vk-unzip2__track {
+    left: 31.31%;
+    right: 31.31%;
+    top: 21.51%;
+  }
+}

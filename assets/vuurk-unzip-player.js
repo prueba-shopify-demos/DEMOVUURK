@@ -9,12 +9,19 @@
   const OPEN_AT = 95; // a partir de este % el envase queda abierto
   const KEY_STEP = 5;
   const PAGE_STEP = 20;
-  // Boca del envase abierto en el último fotograma, en fracciones del escenario.
-  // El móvil es el recorte central de 512 px del render de 1200 px (meta.json de tools/vuurk-3d).
-  // lateral: desplazamiento horizontal de cada gummy; en móvil el envase ocupa casi todo
-  // el ancho, así que caen por fuera de sus bordes en lugar de sobre el logotipo.
+  // Parte del fotograma que se dibuja (fracciones). En escritorio, un recorte 4:3
+  // centrado en el envase (x 0,36–0,68 · y 0,11–0,92 del render): lo agranda sin cortarlo.
+  // Tiene la proporción del escenario, así que no se deforma. En móvil, el fotograma completo.
+  const VIEW = {
+    desktop: { x: 0.1729, y: 0.04, w: 0.6542, h: 0.92 },
+    mobile: { x: 0, y: 0, w: 1, h: 1 }
+  };
+  // Boca del envase abierto en el último fotograma, en fracciones del escenario
+  // (con VIEW ya aplicado). El móvil es el recorte central de 512 px del render de
+  // 1200 px (meta.json de tools/vuurk-3d). lateral: desplazamiento horizontal de cada
+  // gummy; caen por fuera de los bordes del envase en lugar de sobre el logotipo.
   const MOUTH = {
-    desktop: { x: 0.505, y: 0.26, spread: 0.06, lateral: [0.1, 0.3] },
+    desktop: { x: 0.5076, y: 0.2391, spread: 0.0917, lateral: [0.2, 0.4] },
     mobile: { x: 0.512, y: 0.26, spread: 0.14, lateral: [0.3, 0.46] }
   };
   const GUMMIES = { desktop: 9, mobile: 7 };
@@ -381,8 +388,11 @@
       const index = nearestAvailable(wanted, ready, this.count);
       if (index >= 0 && index !== this.drawn) {
         const bmp = this.bitmaps.get(index);
-        const r = coverRect(bmp.width, bmp.height, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(bmp, r.x, r.y, r.w, r.h);
+        const v = this.mqMobile.matches ? VIEW.mobile : VIEW.desktop;
+        const sw = bmp.width * v.w;
+        const sh = bmp.height * v.h;
+        const r = coverRect(sw, sh, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(bmp, bmp.width * v.x, bmp.height * v.y, sw, sh, r.x, r.y, r.w, r.h);
         this.drawn = index;
         this.stats.draws++;
       }
@@ -538,6 +548,7 @@
     releaseTarget,
     coverRect,
     easeOutCubic,
+    VIEW,
     MOUTH,
     GUMMIES,
     random,

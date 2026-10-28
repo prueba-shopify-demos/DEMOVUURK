@@ -97,9 +97,10 @@ test('burstPlan es reproducible, alterna lados y respeta los rangos', () => {
   const a = P.burstPlan(9, 1);
   assert.equal(JSON.stringify(a), JSON.stringify(P.burstPlan(9, 1)));
   assert.notEqual(JSON.stringify(a), JSON.stringify(P.burstPlan(9, 2)));
+  const [lo, hi] = P.MOUTH.desktop.lateral;
   a.forEach((g, i) => {
     assert.equal(Math.sign(g.dx), i % 2 ? 1 : -1);
-    assert.ok(Math.abs(g.dx) >= 0.1 && Math.abs(g.dx) <= 0.3);
+    assert.ok(Math.abs(g.dx) >= lo && Math.abs(g.dx) <= hi);
     assert.ok(g.rise >= 0.09 && g.rise <= 0.17);
     assert.ok(g.depth >= 0 && g.depth < 1);
     assert.ok(g.delay + g.duration <= 2200, 'animación breve');
@@ -128,4 +129,34 @@ test('burstKeyframes: sale de la boca, sube y cae hacia el lateral, aparece y se
   assert.equal(frames.at(-1).opacity, 0);
   assert.ok(frames.every((f) => f.opacity >= 0 && f.opacity <= 1));
   assert.equal(frames.at(-1).offset, 1);
+});
+
+test('VIEW: el recorte de escritorio es 4:3 sobre el fotograma de 1200×640 y entra en él', () => {
+  const v = P.VIEW.desktop;
+  assert.ok(Math.abs((v.w * 1200) / (v.h * 640) - 4 / 3) < 0.001);
+  assert.ok(v.x >= 0 && v.y >= 0 && v.x + v.w <= 1 && v.y + v.h <= 1);
+  // Envase del render (x 0,363–0,678 · y 0,106–0,916): completo dentro del recorte.
+  assert.ok(v.x < 0.363 && v.x + v.w > 0.678 && v.y < 0.106 && v.y + v.h > 0.916);
+  assert.deepEqual({ ...P.VIEW.mobile }, { x: 0, y: 0, w: 1, h: 1 });
+});
+
+test('escritorio: las gummies no se recortan en el borde del escenario mientras son visibles', () => {
+  // Escenario 4:3 al máximo (960 px) y al mínimo (560 px de alto).
+  for (const [kind, box] of [['desktop', { w: 960, h: 720 }], ['desktop', { w: 746.7, h: 560 }]]) {
+    const mouth = P.MOUTH[kind];
+    for (let seed = 1; seed <= 40; seed++) {
+      P.burstPlan(P.GUMMIES[kind], seed, mouth.lateral).forEach((g) => {
+        const size = g.size * box.h;
+        P.burstKeyframes(g, mouth, box, 40).forEach((f) => {
+          if (f.opacity < 0.5) return; // apareciendo o ya desvaneciéndose
+          const [x, y, , scale] = f.transform.match(/-?[\d.]+/g).map(Number);
+          const r = (size * scale) / 2;
+          const cx = x + size / 2;
+          const cy = y + size / 2;
+          assert.ok(cy - r >= 0, `${kind} ${seed}: sale por arriba`);
+          assert.ok(cx - r >= 0 && cx + r <= box.w, `${kind} ${seed}: sale por un costado`);
+        });
+      });
+    }
+  }
 });
