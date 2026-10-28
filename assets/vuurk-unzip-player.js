@@ -9,6 +9,15 @@
   const OPEN_AT = 95; // a partir de este % el envase queda abierto
   const KEY_STEP = 5;
   const PAGE_STEP = 20;
+  // Boca del envase abierto en el último fotograma, en fracciones del escenario.
+  // El móvil es el recorte central de 512 px del render de 1200 px (meta.json de tools/vuurk-3d).
+  // lateral: desplazamiento horizontal de cada gummy; en móvil el envase ocupa casi todo
+  // el ancho, así que caen por fuera de sus bordes en lugar de sobre el logotipo.
+  const MOUTH = {
+    desktop: { x: 0.505, y: 0.26, spread: 0.06, lateral: [0.1, 0.3] },
+    mobile: { x: 0.512, y: 0.26, spread: 0.14, lateral: [0.3, 0.46] }
+  };
+  const GUMMIES = { desktop: 9, mobile: 7 };
 
   /* ---------- Funciones puras ---------- */
 
@@ -101,6 +110,59 @@
 
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
+  // Generador pseudoaleatorio con semilla (mulberry32): ráfagas reproducibles.
+  const random = (seed) => () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  // Salida de gummies: cada una sube desde la boca y cae hacia un lateral, alternando lados.
+  // Medidas relativas al escenario (ancho y alto = 1); depth 0 = atrás, 1 = adelante.
+  const burstPlan = (count, seed, lateral = MOUTH.desktop.lateral) => {
+    const rnd = random(seed);
+    const range = (a, b) => a + (b - a) * rnd();
+    return Array.from({ length: count }, (_, i) => {
+      const side = i % 2 ? 1 : -1;
+      const depth = rnd();
+      return {
+        offset: range(-1, 1), // punto de salida dentro de la boca
+        dx: side * range(lateral[0], lateral[1]),
+        rise: range(0.09, 0.17), // altura sobre la boca
+        apex: range(0.32, 0.4), // momento del punto más alto (0–1)
+        spin: side * range(90, 260),
+        size: range(0.085, 0.12) * (0.75 + 0.35 * depth), // fracción del alto
+        depth,
+        delay: Math.round(i * 45 + range(0, 60)),
+        duration: Math.round(range(1300, 1700))
+      };
+    });
+  };
+
+  // Fotogramas clave (Web Animations) de una gummy: tiro parabólico en px.
+  // Aparece al asomar por la boca y se desvanece al caer junto al envase.
+  const burstKeyframes = (g, mouth, box, steps = 12) => {
+    const size = g.size * box.h;
+    const x0 = (mouth.x + g.offset * mouth.spread) * box.w - size / 2;
+    const y0 = mouth.y * box.h - size / 2;
+    const gravity = (2 * g.rise * box.h) / (g.apex * g.apex);
+    const frames = [];
+    for (let k = 0; k <= steps; k++) {
+      const t = k / steps;
+      const x = x0 + g.dx * box.w * t;
+      const y = y0 - gravity * g.apex * t + 0.5 * gravity * t * t;
+      const scale = 0.55 + 0.45 * Math.min(1, t / 0.2);
+      const opacity = t < 0.08 ? t / 0.08 : t > 0.72 ? (1 - t) / 0.28 : 1;
+      frames.push({
+        offset: t,
+        opacity: Number(opacity.toFixed(3)),
+        transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${(g.spin * t).toFixed(1)}deg) scale(${scale.toFixed(3)})`
+      });
+    }
+    return frames;
+  };
+
   /* ---------- Reproductor ---------- */
 
   class Player {
@@ -110,9 +172,7 @@
       this.stage = root.querySelector('[data-vk-unzip2-stage]');
       this.canvas = root.querySelector('[data-vk-unzip2-canvas]');
       this.handle = root.querySelector('[data-vk-unzip2-handle]');
-      this.fill = root.querySelector('[data-vk-unzip2-fill]');
-      this.openBtn = root.querySelector('[data-vk-unzip2-open]');
-      this.resetBtn = root.querySelector('[data-vk-unzip2-reset]');
+      this.burstLayer = root.querySelector('[data-vk-unzip2-burst]');
       this.cta = root.querySelector('[data-vk-unzip2-cta]');
       this.status = root.querySelector('[data-vk-unzip2-status]');
       this.fallback = root.querySelector('[data-vk-unzip2-fallback]');
@@ -120,6 +180,7 @@
 
       const data = JSON.parse(root.querySelector('[data-vk-unzip2-frames]').textContent);
       this.sets = data;
+      this.sprites = data.gummies || [];
       this.mqMobile = window.matchMedia('(max-width: 749px)');
       this.mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
       const conn = navigator.connection;
@@ -130,6 +191,10 @@
       this.anim = 0;
       this.drag = null;
       this.started = false;
+      // La salida de gummies se dispara una vez por apertura y se rearma al cerrar.
+      this.burstArmed = true;
+      this.bursts = 0;
+      this.burstAnims = [];
       this.stats = { requested: 0, loaded: 0, bytes: 0, decoded: 0, maxDecoded: 0, draws: 0 };
 
       this.selectSet();
@@ -177,13 +242,9 @@
         const next = keyToProgress(event.key, this.progress);
         if (next === null) return;
         event.preventDefault();
+        this.root.classList.add('is-touched');
         this.stopAnim();
         this.setProgress(this.binary ? (next >= 50 ? 100 : 0) : next);
-      });
-      this.openBtn.addEventListener('click', () => this.animateTo(100));
-      this.resetBtn.addEventListener('click', () => {
-        this.animateTo(0);
-        this.handle.focus();
       });
 
       this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -213,6 +274,7 @@
     destroy() {
       this.cancelLoads();
       this.stopAnim();
+      this.resetBurst();
       this.io.disconnect();
       this.resizeObserver.disconnect();
       this.mqMobile.removeEventListener('change', this.onMedia);
@@ -224,6 +286,7 @@
     /* ----- Carga progresiva ----- */
 
     startLoading() {
+      this.gummyPool();
       const all = loadOrder(this.count);
       this.queue = this.binary ? [0, this.count - 1] : all;
       for (let i = 0; i < 4; i++) this.next();
@@ -338,8 +401,61 @@
         this.cta.hidden = !open;
         this.status.textContent = open ? 'Envase abierto.' : 'Envase cerrado.';
       }
-      this.openBtn.hidden = open;
+      if (this.progress >= 100 && this.burstArmed) {
+        this.burstArmed = false;
+        this.burst();
+      } else if (!open && !this.burstArmed) {
+        this.resetBurst();
+      }
       this.render();
+    }
+
+    /* ----- Salida de gummies: capa sobre el canvas, sin tocar la secuencia ----- */
+
+    // Imágenes reutilizables; se crean al empezar la carga para tenerlas listas al abrir.
+    gummyPool() {
+      if (this.pool || !this.burstLayer || !this.sprites.length) return this.pool;
+      this.pool = Array.from({ length: Math.max(GUMMIES.desktop, GUMMIES.mobile) }, (_, i) => {
+        const img = document.createElement('img');
+        img.className = 'vk-unzip2__gummy';
+        img.alt = '';
+        img.decoding = 'async';
+        img.draggable = false;
+        img.src = this.sprites[i % this.sprites.length];
+        this.burstLayer.appendChild(img);
+        return img;
+      });
+      return this.pool;
+    }
+
+    burst() {
+      const pool = this.gummyPool();
+      if (!pool || this.mqReduce.matches) return;
+      const rect = this.stage.getBoundingClientRect();
+      const box = { w: rect.width, h: rect.height };
+      const mobile = this.mqMobile.matches;
+      const mouth = mobile ? MOUTH.mobile : MOUTH.desktop;
+      const plan = burstPlan(mobile ? GUMMIES.mobile : GUMMIES.desktop, ++this.bursts, mouth.lateral);
+      this.burstAnims = plan.map((g, i) => {
+        const img = pool[i];
+        const size = `${(g.size * box.h).toFixed(1)}px`;
+        img.style.width = size;
+        img.style.height = size;
+        img.style.zIndex = String(Math.round(g.depth * 10));
+        img.style.setProperty('--vk-gummy-light', (0.72 + 0.28 * g.depth).toFixed(2));
+        return img.animate(burstKeyframes(g, mouth, box), {
+          duration: g.duration,
+          delay: g.delay,
+          easing: 'linear',
+          fill: 'both'
+        });
+      });
+    }
+
+    resetBurst() {
+      this.burstAnims.forEach((anim) => anim.cancel());
+      this.burstAnims = [];
+      this.burstArmed = true;
     }
 
     stopAnim() {
@@ -367,6 +483,7 @@
       if (event.button > 0) return;
       if (event.target.closest('a, button')) return;
       this.stopAnim();
+      this.root.classList.add('is-touched');
       this.drag = {
         id: event.pointerId,
         startX: event.clientX,
@@ -421,6 +538,11 @@
     releaseTarget,
     coverRect,
     easeOutCubic,
+    MOUTH,
+    GUMMIES,
+    random,
+    burstPlan,
+    burstKeyframes,
     Player,
     boot
   };

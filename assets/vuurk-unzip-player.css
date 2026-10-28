@@ -1,17 +1,7 @@
 /* VUURK Unzip V2 (U1): reproductor de fotogramas. Usa los tokens de .vk (vuurk-landing.css). */
-/* Las clases con display (botones, CTA) no deben anular el atributo hidden. */
+/* Las clases con display (CTA) no deben anular el atributo hidden. */
 .vk-unzip2 [hidden] { display: none !important; }
 .vk-unzip2 .vk__head { margin-bottom: clamp(24px, 4vw, 48px); }
-.vk-unzip2__notice {
-  display: inline-block;
-  margin: 18px 0 0;
-  padding: 6px 12px;
-  border: 1px dashed var(--vk-orange);
-  border-radius: 999px;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  color: var(--vk-orange);
-}
 
 .vk-unzip2__fallback img,
 .vk-unzip2__stage {
@@ -33,6 +23,25 @@
 }
 .vk-unzip2.is-dragging .vk-unzip2__stage { cursor: grabbing; }
 .vk-unzip2__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* Gummies que salen de la boca al completar la apertura (vuurk-unzip-player.js).
+   Capa propia sobre el canvas: no ocupa espacio ni recibe eventos. */
+.vk-unzip2__burst {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  contain: strict;
+}
+.vk-unzip2__gummy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  /* Las del fondo, algo más oscuras (--vk-gummy-light desde JS). */
+  filter: brightness(var(--vk-gummy-light, 1)) drop-shadow(0 6px 8px rgb(0 0 0 / 0.45));
+}
 
 .vk-unzip2__loader {
   position: absolute;
@@ -57,13 +66,6 @@
   border-radius: 4px;
   background: rgb(255 231 208 / 0.18);
 }
-.vk-unzip2__fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--vk-unzip2-progress, 0%);
-  border-radius: inherit;
-  background: var(--vk-orange);
-}
 .vk-unzip2__handle {
   position: absolute;
   top: 50%;
@@ -86,29 +88,6 @@
 }
 .vk-unzip2__handle:focus-visible { outline: 3px solid var(--vk-cream); outline-offset: 4px; }
 
-.vk-unzip2__hint {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(42% + 34px);
-  margin: 0;
-  text-align: center;
-  font-size: 14px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--vk-cream);
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.8);
-  transition: opacity 0.3s var(--vk-ease);
-}
-.vk-unzip2.is-open .vk-unzip2__hint { opacity: 0; }
-
-.vk-unzip2__controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-}
 .vk-unzip2__cta { display: flex; justify-content: center; margin-top: 20px; }
 
 .vk-unzip2__sr {
@@ -123,12 +102,7 @@
 @media (max-width: 749px) {
   .vk-unzip2__fallback img,
   .vk-unzip2__stage { aspect-ratio: 4 / 5; }
-  .vk-unzip2__controls .vk-btn,
   .vk-unzip2__cta .vk-btn { width: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vk-unzip2__hint { transition: none; }
 }
 
 
@@ -152,10 +126,6 @@
   border-radius: 18px;
 }
 
-.vk-unzip2__controls {
-  margin-top: 16px;
-}
-
 @media (max-width: 749px) {
   .vk-unzip2 .vk__head {
     margin-bottom: 18px;
@@ -165,16 +135,6 @@
   .vk-unzip2__fallback img {
     aspect-ratio: 4 / 5;
     border-radius: 12px;
-  }
-
-  .vk-unzip2__controls {
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .vk-unzip2__notice {
-    font-size: 11px;
-    margin-top: 12px;
   }
 }
 
@@ -193,11 +153,6 @@
   z-index: 3;
 }
 
-/* Eliminar la barra horizontal que cruza el packaging. */
-.vk-unzip2__fill {
-  display: none;
-}
-
 /* Tirador discreto, directamente sobre el zipper. */
 .vk-unzip2__handle {
   width: 36px;
@@ -212,12 +167,13 @@
   inset: 12px;
 }
 
-/* Indicación sobre el fondo, por encima del envase (no tapa el logotipo). */
-.vk-unzip2__hint {
-  top: 6%;
-  font-size: 12px;
-  letter-spacing: .04em;
-  pointer-events: none;
+/* Sin texto de ayuda: el tirador late suavemente hasta la primera interacción. */
+.vk-unzip2:not(.is-touched):not(.is-open) .vk-unzip2__handle {
+  animation: vk-unzip2-invite 2.4s var(--vk-ease, ease) 1s infinite;
+}
+@keyframes vk-unzip2-invite {
+  0%, 60%, 100% { box-shadow: 0 3px 12px rgba(0, 0, 0, .45), 0 0 0 0 rgb(252 110 32 / 0.55); }
+  30% { box-shadow: 0 3px 12px rgba(0, 0, 0, .45), 0 0 0 12px rgb(252 110 32 / 0); }
 }
 
 /* Ajustes para celulares. */
@@ -227,12 +183,10 @@
     right: 21.3%;
     top: 23.8%;
   }
+}
 
-  .vk-unzip2__hint {
-    top: 6%;
-    font-size: 11px;
-    padding-inline: 12px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .vk-unzip2__handle { animation: none !important; }
 }
 
 /* FIN VUURK ZIPPER */

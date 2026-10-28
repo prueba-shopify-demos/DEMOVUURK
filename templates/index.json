@@ -153,11 +153,7 @@
       "settings": {
         "eyebrow": "EXPERIENCIA VUURK",
         "title": "DESCUBRÍ VUURK",
-        "text": "<p>Deslizá para abrir el envase.</p>",
-        "hint": "Arrastrá hacia la derecha para abrir",
         "slider_label": "Apertura del envase VUURK",
-        "open_label": "Abrir envase",
-        "reset_label": "Reiniciar",
         "open_alt": "Demostración de apertura del envase VUURK",
         "product": "vuurk-energy-gummies-energia-enfoque",
         "cta_label": "Comprar VUURK",

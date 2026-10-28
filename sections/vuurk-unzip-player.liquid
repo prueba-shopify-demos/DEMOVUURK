@@ -2,6 +2,8 @@
   VUURK Unzip V2 (U1): reproductor de fotogramas controlado por arrastre.
   Sin patrón de fotogramas usa la secuencia 3D del envase con el arte oficial
   (assets/vuurk-unzip-berry-{d,m}-01…24.webp, renderizada con tools/vuurk-3d).
+  Al terminar la apertura, una capa independiente hace salir gummies de la boca
+  (assets/vuurk-gummy-01…06.webp, tools/vuurk-3d/scripts/render_gummies.py).
   No sustituye a la sección VUURK · Envase 3D ni al prototipo V1.
 {%- endcomment -%}
 {%- liquid
@@ -55,9 +57,6 @@
       {%- if section.settings.text != blank -%}
         <div class="vk__lead">{{ section.settings.text }}</div>
       {%- endif -%}
-      {%- if using_test -%}
-        <p class="vk-unzip2__notice">Visualización 3D interactiva del envase VUURK.</p>
-      {%- endif -%}
     </div>
 
     <div class="vk-unzip2__fallback" data-vk-unzip2-fallback>
@@ -77,9 +76,9 @@
     <div class="vk-unzip2__player" data-vk-unzip2-player hidden>
       <div class="vk-unzip2__stage" data-vk-unzip2-stage>
         <canvas class="vk-unzip2__canvas" data-vk-unzip2-canvas aria-hidden="true"></canvas>
+        <div class="vk-unzip2__burst" data-vk-unzip2-burst aria-hidden="true"></div>
         <span class="vk-unzip2__loader" aria-hidden="true">Cargando…</span>
         <div class="vk-unzip2__track">
-          <div class="vk-unzip2__fill" data-vk-unzip2-fill></div>
           <div
             class="vk-unzip2__handle"
             data-vk-unzip2-handle
@@ -90,15 +89,8 @@
             aria-valuemax="100"
             aria-valuenow="0"
             aria-valuetext="Apertura 0 %"
-            aria-describedby="VkUnzip2Hint-{{ section.id }}"
           ></div>
         </div>
-        <p id="VkUnzip2Hint-{{ section.id }}" class="vk-unzip2__hint">{{ section.settings.hint | escape }}</p>
-      </div>
-
-      <div class="vk-unzip2__controls">
-        <button type="button" class="vk-btn" data-vk-unzip2-open>{{ section.settings.open_label | escape }}</button>
-        <button type="button" class="vk-btn vk-btn--ghost" data-vk-unzip2-reset>{{ section.settings.reset_label | escape }}</button>
       </div>
       <p class="vk-unzip2__sr" role="status" aria-live="polite" data-vk-unzip2-status></p>
     </div>
@@ -133,6 +125,11 @@
             {%- endif -%}
             {{ url | json }}{% unless forloop.last %},{% endunless %}
           {%- endfor -%}
+        ],
+        "gummies": [
+          {%- for i in (1..6) -%}
+            {{ 'vuurk-gummy-0' | append: i | append: '.webp' | asset_url | json }}{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
         ]
       }
     </script>
@@ -147,16 +144,8 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Antetítulo", "default": "Experiencia VUURK" },
     { "type": "text", "id": "title", "label": "Título", "default": "Abrí tu energía." },
-    {
-      "type": "richtext",
-      "id": "text",
-      "label": "Texto",
-      "default": "<p>Deslizá el cierre para abrir el envase.</p>"
-    },
-    { "type": "text", "id": "hint", "label": "Indicación", "default": "Arrastrá hacia la derecha para abrir" },
+    { "type": "richtext", "id": "text", "label": "Texto" },
     { "type": "text", "id": "slider_label", "label": "Nombre accesible del control", "default": "Apertura del envase" },
-    { "type": "text", "id": "open_label", "label": "Botón abrir", "default": "Abrir envase" },
-    { "type": "text", "id": "reset_label", "label": "Botón reiniciar", "default": "Reiniciar" },
     { "type": "text", "id": "open_alt", "label": "Texto alternativo del envase abierto", "default": "Envase VUURK abierto" },
     { "type": "header", "content": "Compra" },
     { "type": "product", "id": "product", "label": "Producto VUURK" },

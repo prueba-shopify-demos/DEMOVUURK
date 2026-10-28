@@ -1,5 +1,5 @@
 // Pruebas de interacción del reproductor VUURK Unzip con un DOM simulado:
-// arrastre con mouse y con el dedo (pointer events), teclado y botones.
+// arrastre con mouse y con el dedo (pointer events), teclado y salida de gummies.
 // Ejecutar: node --test tests/*.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,6 +10,7 @@ const code = readFileSync(new URL('../assets/vuurk-unzip-player.js', import.meta
 const FRAMES = 24;
 const STAGE_WIDTH = 1000;
 const TRACK_WIDTH = 280; // pista sobre el zipper
+const SPRITES = Array.from({ length: 6 }, (_, i) => `/gummy-${i + 1}.webp`);
 
 class FakeElement {
   constructor(name) {
@@ -27,6 +28,14 @@ class FakeElement {
       toggle: (c, on) => (on ?? !this.classes.has(c)) ? this.classes.add(c) : this.classes.delete(c),
     };
     this.style = { setProperty: (k, v) => (this.styleProps[k] = v) };
+    this.children = [];
+    this.animations = [];
+  }
+  appendChild(child) { this.children.push(child); return child; }
+  animate(keyframes, options) {
+    const anim = { keyframes, options, cancelled: false, cancel() { this.cancelled = true; } };
+    this.animations.push(anim);
+    return anim;
   }
   addEventListener(type, fn) {
     (this.listeners[type] ||= []).push(fn);
@@ -43,11 +52,12 @@ class FakeElement {
   focus() { this.focused = true; }
 }
 
-function setup() {
+// queries: media queries activas, p. ej. ['(max-width: 749px)'].
+function setup(queries = []) {
   const els = {};
   const sel = (s) => (els[s] ||= new FakeElement(s));
   const urls = Array.from({ length: FRAMES }, (_, i) => `/f-${i + 1}.webp`);
-  sel('[data-vk-unzip2-frames]').textContent = JSON.stringify({ desktop: urls, mobile: urls });
+  sel('[data-vk-unzip2-frames]').textContent = JSON.stringify({ desktop: urls, mobile: urls, gummies: SPRITES });
   const track = new FakeElement('track');
   track.width = TRACK_WIDTH;
   sel('[data-vk-unzip2-handle]').parentElement = track;
@@ -59,10 +69,12 @@ function setup() {
 
   let now = 0;
   const raf = [];
-  const media = { matches: false, addEventListener() {}, removeEventListener() {} };
+  const media = (q) => ({ matches: queries.includes(q), addEventListener() {}, removeEventListener() {} });
   const sandbox = {
     module: { exports: {} },
-    window: { matchMedia: () => media, devicePixelRatio: 1 },
+    window: { matchMedia: media, devicePixelRatio: 1 },
+    // readyState 'loading': boot() solo registra eventos; la prueba crea el Player.
+    document: { readyState: 'loading', addEventListener() {}, createElement: (tag) => new FakeElement(tag) },
     navigator: {},
     performance: { now: () => now },
     requestAnimationFrame: (fn) => raf.push(fn),
@@ -89,7 +101,9 @@ function setup() {
       raf.shift()(now);
     }
   };
-  return { root, player, sel, draws, flushAsync, flushAnimation };
+  // Animaciones de gummies activas (no canceladas).
+  const running = () => sel('[data-vk-unzip2-burst]').children.flatMap((img) => img.animations).filter((a) => !a.cancelled);
+  return { root, player, sel, draws, flushAsync, flushAnimation, running };
 }
 
 const drag = (stage, pointerType, fromX, toX) => {
@@ -165,14 +179,79 @@ test('teclado: flechas, Inicio y Fin mueven la apertura', async () => {
   assert.ok(!ignored.defaultPrevented);
 });
 
-test('botones Abrir y Reiniciar', async () => {
-  const { player, sel, flushAsync, flushAnimation } = setup();
+test('gummies: listas al empezar la carga, salen una sola vez al completar la apertura', async () => {
+  const { player, sel, flushAsync, running } = setup();
   await flushAsync();
-  sel('[data-vk-unzip2-open]').dispatch('click');
+  const layer = sel('[data-vk-unzip2-burst]');
+  assert.equal(layer.children.length, 9);
+  assert.deepEqual(layer.children.map((img) => img.src).slice(0, 6), SPRITES);
+  assert.ok(layer.children.every((img) => img.alt === ''));
+  const handle = sel('[data-vk-unzip2-handle]');
+  // A mitad de camino no sale nada.
+  handle.dispatch('keydown', { key: 'PageUp' });
+  handle.dispatch('keydown', { key: 'PageUp' });
+  assert.equal(running().length, 0);
+  handle.dispatch('keydown', { key: 'End' });
+  assert.equal(running().length, 9);
+  const first = running()[0];
+  assert.equal(first.keyframes[0].opacity, 0);
+  assert.equal(first.keyframes.at(-1).opacity, 0);
+  assert.equal(first.options.fill, 'both');
+  // Sigue abierto: retroceder un paso y volver al final no repite la salida.
+  handle.dispatch('keydown', { key: 'ArrowLeft' });
+  handle.dispatch('keydown', { key: 'End' });
+  assert.equal(player.bursts, 1);
+  assert.equal(running().length, 9);
+});
+
+test('gummies: al cerrar se restablecen y vuelven a salir al reabrir (arrastre)', async () => {
+  const { player, sel, flushAsync, flushAnimation, running } = setup();
+  await flushAsync();
+  const stage = sel('[data-vk-unzip2-stage]');
+  drag(stage, 'touch', 50, 950);
+  stage.dispatch('pointerup', { pointerId: 7 });
   flushAnimation();
+  assert.equal(player.bursts, 1);
+  const firstRun = running();
+  drag(stage, 'touch', 950, 50);
+  stage.dispatch('pointerup', { pointerId: 7 });
+  flushAnimation();
+  assert.equal(running().length, 0);
+  assert.ok(firstRun.every((a) => a.cancelled));
+  assert.ok(player.burstArmed);
+  drag(stage, 'mouse', 50, 950);
+  stage.dispatch('pointerup', { pointerId: 7 });
+  flushAnimation();
+  assert.equal(player.bursts, 2);
+  assert.equal(running().length, 9);
+});
+
+test('gummies: en móvil salen menos y desde la boca del encuadre móvil', async () => {
+  const { player, sel, flushAsync, running } = setup(['(max-width: 749px)']);
+  await flushAsync();
+  sel('[data-vk-unzip2-handle]').dispatch('keydown', { key: 'End' });
+  assert.equal(running().length, 7);
+  const box = sel('[data-vk-unzip2-stage]').getBoundingClientRect();
+  const img = sel('[data-vk-unzip2-burst]').children[0];
+  const size = parseFloat(img.style.width);
+  const [x, y] = running()[0].keyframes[0].transform.match(/-?[\d.]+/g).map(Number);
+  assert.ok(Math.abs((x + size / 2) / box.width - 0.512) <= 0.14 + 1e-6);
+  assert.ok(Math.abs((y + size / 2) / box.height - 0.26) < 1e-3);
+});
+
+test('gummies: con movimiento reducido no hay animación pero el envase abre igual', async () => {
+  const { root, player, sel, flushAsync, running } = setup(['(prefers-reduced-motion: reduce)']);
+  await flushAsync();
+  sel('[data-vk-unzip2-handle]').dispatch('keydown', { key: 'End' });
   assert.equal(player.progress, 100);
-  sel('[data-vk-unzip2-reset]').dispatch('click');
-  flushAnimation();
-  assert.equal(player.progress, 0);
-  assert.ok(sel('[data-vk-unzip2-handle]').focused);
+  assert.ok(root.classList.contains('is-open'));
+  assert.equal(running().length, 0);
+});
+
+test('la primera interacción detiene la invitación del tirador', async () => {
+  const { root, sel, flushAsync } = setup();
+  await flushAsync();
+  assert.ok(!root.classList.contains('is-touched'));
+  sel('[data-vk-unzip2-handle]').dispatch('keydown', { key: 'ArrowRight' });
+  assert.ok(root.classList.contains('is-touched'));
 });

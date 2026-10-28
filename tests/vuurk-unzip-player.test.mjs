@@ -92,3 +92,40 @@ test('easeOutCubic va de 0 a 1', () => {
   assert.equal(P.easeOutCubic(1), 1);
   assert.ok(P.easeOutCubic(0.5) > 0.5);
 });
+
+test('burstPlan es reproducible, alterna lados y respeta los rangos', () => {
+  const a = P.burstPlan(9, 1);
+  assert.equal(JSON.stringify(a), JSON.stringify(P.burstPlan(9, 1)));
+  assert.notEqual(JSON.stringify(a), JSON.stringify(P.burstPlan(9, 2)));
+  a.forEach((g, i) => {
+    assert.equal(Math.sign(g.dx), i % 2 ? 1 : -1);
+    assert.ok(Math.abs(g.dx) >= 0.1 && Math.abs(g.dx) <= 0.3);
+    assert.ok(g.rise >= 0.09 && g.rise <= 0.17);
+    assert.ok(g.depth >= 0 && g.depth < 1);
+    assert.ok(g.delay + g.duration <= 2200, 'animación breve');
+  });
+  // En móvil caen más hacia los lados, por fuera del envase.
+  P.burstPlan(7, 1, P.MOUTH.mobile.lateral).forEach((g) => assert.ok(Math.abs(g.dx) >= 0.3 && Math.abs(g.dx) <= 0.46));
+});
+
+test('burstKeyframes: sale de la boca, sube y cae hacia el lateral, aparece y se desvanece', () => {
+  const box = { w: 1000, h: 533 };
+  const mouth = P.MOUTH.desktop;
+  const g = { offset: 0, dx: 0.2, rise: 0.12, apex: 0.36, spin: 180, size: 0.1, depth: 1 };
+  const frames = P.burstKeyframes(g, mouth, box, 50);
+  const pos = (f) => f.transform.match(/-?[\d.]+/g).slice(0, 2).map(Number);
+  const half = (g.size * box.h) / 2;
+  const [x0, y0] = pos(frames[0]);
+  assert.ok(Math.abs(x0 + half - mouth.x * box.w) < 0.1);
+  assert.ok(Math.abs(y0 + half - mouth.y * box.h) < 0.1);
+  const ys = frames.map((f) => pos(f)[1]);
+  const top = Math.min(...ys);
+  assert.ok(Math.abs(y0 - top - g.rise * box.h) < 1, 'llega a la altura pedida');
+  assert.equal(ys.indexOf(top), Math.round(g.apex * 50));
+  const [x1] = pos(frames.at(-1));
+  assert.ok(Math.abs(x1 - x0 - g.dx * box.w) < 0.1);
+  assert.equal(frames[0].opacity, 0);
+  assert.equal(frames.at(-1).opacity, 0);
+  assert.ok(frames.every((f) => f.opacity >= 0 && f.opacity <= 1));
+  assert.equal(frames.at(-1).offset, 1);
+});
