@@ -254,19 +254,18 @@
     content: '';
     position: absolute;
     aspect-ratio: 808 / 450;
-    /* El extremo junto al envase ya termina en el propio asset (sin máscara). */
     background: var(--vk-splash) center / contain no-repeat;
   }
   /* Izquierda: espejada, la parte densa junto al envase y las gotas hacia afuera. */
   .vk-unzip2__splash::before {
-    right: 65%;
+    right: 62%;
     top: 36%;
     width: 72%;
     transform: scaleX(-1);
   }
   /* Derecha: como en el envase, más arriba y algo más chica para no ser simétrica. */
   .vk-unzip2__splash::after {
-    left: 65%;
+    left: 64%;
     top: 22%;
     width: 64%;
   }

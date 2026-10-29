@@ -22,13 +22,14 @@ import vk_geom as G  # noqa: E402
 # frutos (y > 1060) y por debajo de «Burn clean.» (y < 610), dentro del envase.
 BOX = (92, 610, 900, 1060)
 FEATHER = 220  # px de fundido suave en el borde inferior (corte sobre los frutos)
-# Extremo izquierdo (el que queda junto al envase): el recorte del arte corta la
-# salpicadura en vertical. En vez de fundir ese corte, el extremo se rehace en
-# diagonal, en la dirección de la salpicadura (abajo-izquierda → arriba-derecha):
-# la textura se deshace antes en sus zonas oscuras, sin contorno recto.
-TIP_X = 60  # inicio del extremo en la base (px del recorte)
-TIP_SLOPE = 0.45  # cuánto retrocede el extremo hacia arriba (px por px)
-TIP_FADE = 200  # largo del extremo
+# Extremo izquierdo (el que queda junto al envase): el recorte del arte lo cortaba en
+# vertical. Ahora termina en diagonal, como la propia salpicadura (abajo-izquierda →
+# arriba-derecha): arranca en x=TIP_X en la base y retrocede TIP_SLOPE px por px hacia
+# arriba, con un borde de TIP_SOFT px. El borde recto del envase del arte (x < 30)
+# queda fuera y el resto conserva la intensidad original.
+TIP_X = 40
+TIP_SLOPE = 0.25
+TIP_SOFT = 80
 HUE = (-0.03, 0.16)  # rojo (desde 349°) → naranja → amarillo (58°)
 
 art = G.load_config()['art']
@@ -46,9 +47,8 @@ for y in range(h):
             hh -= 1.0
         if not (HUE[0] <= hh <= HUE[1]) or s < 0.35:
             continue
-        start = TIP_X + TIP_SLOPE * (h - 1 - y)
-        u = min(1.0, max(0.0, (x - start) / TIP_FADE))
-        edge_x = (u * u * (3 - 2 * u)) ** (1 + 1.5 * (1 - v))
+        u = min(1.0, max(0.0, (x - TIP_X - TIP_SLOPE * (h - 1 - y)) / TIP_SOFT))
+        edge_x = u * u * (3 - 2 * u)
         a = v * min(1.0, (s - 0.35) / 0.25) * edge_y * edge_x
         if a < 0.02:
             continue
