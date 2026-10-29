@@ -1106,3 +1106,149 @@
     max-width: 100%;
   }
 }
+
+
+/* VUURK UNZIP EXPERIENCE V1 */
+.vk-unzip {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--vk-line);
+  border-radius: 20px;
+  background: #202020;
+  color: #ffe7d0;
+}
+
+.vk-unzip__eyebrow {
+  color: #fc6e20;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+}
+
+.vk-unzip__title {
+  margin: 8px 0;
+  font-size: clamp(25px, 3vw, 36px);
+  line-height: 1;
+}
+
+.vk-unzip__head p {
+  margin: 8px 0 18px;
+  font-size: 14px;
+}
+
+.vk-unzip__scene {
+  position: relative;
+  height: 310px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #151515;
+}
+
+.vk-unzip__layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.vk-unzip__layer img {
+  width: auto;
+  height: 88%;
+  max-width: 90%;
+  object-fit: contain;
+}
+
+.vk-unzip__layer span {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+
+.vk-unzip__layer--open {
+  background: radial-gradient(circle, #fc6e20 0%, #51230d 85%);
+  clip-path: inset(0 calc(100% - var(--vk-unzip-progress, 0%)) 0 0);
+}
+
+.vk-unzip__divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--vk-unzip-progress, 0%);
+  width: 2px;
+  background: #fc6e20;
+  pointer-events: none;
+}
+
+.vk-unzip__label {
+  display: block;
+  margin: 18px 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.vk-unzip__range {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  accent-color: #fc6e20;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.vk-unzip__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.vk-unzip__reset,
+.vk-unzip__cta {
+  padding: 12px 16px;
+  border: 1px solid #fc6e20;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffe7d0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vk-unzip__cta {
+  background: #fc6e20;
+  color: #151515;
+}
+
+.vk-unzip__cta[hidden] {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .vk-unzip {
+    padding: 16px;
+  }
+
+  .vk-unzip__scene {
+    height: 260px;
+  }
+
+  .vk-unzip__footer {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vk-unzip *,
+  .vk-unzip *::before,
+  .vk-unzip *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,272 @@
+/* VUURK Unzip V2 (U1): reproductor de fotogramas. Usa los tokens de .vk (vuurk-landing.css). */
+/* Las clases con display (CTA) no deben anular el atributo hidden. */
+.vk-unzip2 [hidden] { display: none !important; }
+.vk-unzip2 .vk__head { margin-bottom: clamp(24px, 4vw, 48px); }
+
+.vk-unzip2__fallback img,
+.vk-unzip2__stage {
+  width: 100%;
+  aspect-ratio: 15 / 8;
+  border-radius: var(--vk-radius);
+  background: #1e1e1e;
+}
+.vk-unzip2__fallback img { object-fit: cover; }
+
+.vk-unzip2__stage {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y; /* el scroll vertical sigue funcionando sobre la sección */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.vk-unzip2.is-dragging .vk-unzip2__stage { cursor: grabbing; }
+.vk-unzip2__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.vk-unzip2__splash { display: none; } /* solo escritorio */
+
+/* Gummies que salen de la boca al completar la apertura (vuurk-unzip-player.js).
+   Capa propia sobre el canvas: no ocupa espacio ni recibe eventos. */
+.vk-unzip2__burst {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  contain: strict;
+}
+.vk-unzip2__gummy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  /* Las del fondo, algo más oscuras (--vk-gummy-light desde JS). */
+  filter: brightness(var(--vk-gummy-light, 1)) drop-shadow(0 6px 8px rgb(0 0 0 / 0.45));
+}
+
+.vk-unzip2__loader {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vk-muted);
+}
+.vk-unzip2.is-loading .vk-unzip2__loader { display: grid; }
+
+/* Pista sobre la línea del cierre: del 10 % al 90 % del ancho */
+.vk-unzip2__track {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 42%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 4px;
+  background: rgb(255 231 208 / 0.18);
+}
+.vk-unzip2__handle {
+  position: absolute;
+  top: 50%;
+  left: var(--vk-unzip2-progress, 0%);
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: var(--vk-orange);
+  box-shadow: 0 0 0 6px rgb(252 110 32 / 0.28), 0 10px 24px -8px rgb(0 0 0 / 0.7);
+  cursor: inherit;
+  touch-action: none;
+}
+.vk-unzip2__handle::after {
+  content: '';
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  background: var(--vk-cream);
+}
+.vk-unzip2__handle:focus-visible { outline: 3px solid var(--vk-cream); outline-offset: 4px; }
+
+.vk-unzip2__cta { display: flex; justify-content: center; margin-top: 20px; }
+
+.vk-unzip2__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 749px) {
+  .vk-unzip2__fallback img,
+  .vk-unzip2__stage { aspect-ratio: 4 / 5; }
+  .vk-unzip2__cta .vk-btn { width: 100%; }
+}
+
+
+/* VUURK UNZIP U3 — SECCIÓN PRINCIPAL */
+.vk-unzip2 .vk__wrap {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.vk-unzip2 .vk__head {
+  margin-bottom: 28px;
+}
+
+.vk-unzip2 .vk__h2 {
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.vk-unzip2__stage,
+.vk-unzip2__fallback img {
+  border-radius: 18px;
+}
+
+@media (max-width: 749px) {
+  .vk-unzip2 .vk__head {
+    margin-bottom: 18px;
+  }
+
+  .vk-unzip2__stage,
+  .vk-unzip2__fallback img {
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+  }
+}
+
+/* VUURK ZIPPER — CONTROL SOBRE EL CIERRE */
+
+/* El control recorre el zipper del prototipo 3D (proyección de cámara:
+   tools/vuurk-3d/out/v3_1/seq/meta.json). El tirador marca el frente de apertura. */
+.vk-unzip2__track {
+  left: 37.8%;
+  right: 37.8%;
+  top: 23.8%;
+  height: 48px;
+  margin-top: -24px;
+  background: transparent;
+  border: 0;
+  z-index: 3;
+}
+
+/* Tirador discreto, directamente sobre el zipper. */
+.vk-unzip2__handle {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  background: #fc6e20;
+  border: 2px solid #ffe7d0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .45);
+}
+
+.vk-unzip2__handle::after {
+  inset: 12px;
+}
+
+/* Sin texto de ayuda: el tirador late suavemente hasta la primera interacción. */
+.vk-unzip2:not(.is-touched):not(.is-open) .vk-unzip2__handle {
+  animation: vk-unzip2-invite 2.4s var(--vk-ease, ease) 1s infinite;
+}
+@keyframes vk-unzip2-invite {
+  0%, 60%, 100% { box-shadow: 0 3px 12px rgba(0, 0, 0, .45), 0 0 0 0 rgb(252 110 32 / 0.55); }
+  30% { box-shadow: 0 3px 12px rgba(0, 0, 0, .45), 0 0 0 12px rgb(252 110 32 / 0); }
+}
+
+/* Ajustes para celulares. */
+@media (max-width: 749px) {
+  .vk-unzip2__track {
+    left: 21.3%;
+    right: 21.3%;
+    top: 23.8%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vk-unzip2__handle { animation: none !important; }
+}
+
+/* FIN VUURK ZIPPER */
+
+/* VUURK DESKTOP — ENVASE CON PROTAGONISMO
+   El reproductor dibuja en escritorio un recorte 4:3 del fotograma centrado en el
+   envase (VIEW.desktop en vuurk-unzip-player.js): escenario 4:3, más angosto y
+   alto, que entra en la pantalla. El zipper se reubica con la misma conversión.
+   Móvil (≤ 749 px) no cambia. */
+@media (min-width: 750px) {
+  .vk-unzip2__stage,
+  .vk-unzip2__fallback img {
+    aspect-ratio: 4 / 3;
+    width: min(100%, 960px);
+    width: min(100%, 960px, max(560px, calc((100svh - 160px) * 4 / 3)));
+    margin-inline: auto;
+  }
+  .vk-unzip2__fallback img { display: block; }
+
+  .vk-unzip2__track {
+    left: 31.31%;
+    right: 31.31%;
+    top: 21.51%;
+  }
+}
+
+/* VUURK DESKTOP — SALPICADURA DEL ARTE OFICIAL
+   El reproductor recorta cada fotograma con la silueta del envase (sin el gris de
+   estudio): la salpicadura del envase (assets/vuurk-splash.webp, extraída con
+   tools/vuurk-3d/scripts/extract_splash.py) queda detrás, hacia los costados, sobre
+   el fondo oscuro de la sección. Zipper y gummies no se tocan. Móvil no cambia. */
+@media (min-width: 750px) {
+  .vk-unzip2 { overflow-x: clip; }
+  .vk-unzip2__player { position: relative; isolation: isolate; }
+
+  .vk-unzip2__stage { background: transparent; }
+  /* Solo sin JavaScript (imagen fija, sin silueta): se funde hacia los bordes. */
+  .vk-unzip2__fallback img {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 16%, #000 28.5%, #000 71.5%, transparent 84%),
+      linear-gradient(to bottom, transparent, #000 6%, #000 96%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 16%, #000 28.5%, #000 71.5%, transparent 84%),
+      linear-gradient(to bottom, transparent, #000 6%, #000 96%, transparent);
+    mask-composite: intersect;
+  }
+
+  /* Mismo tamaño y posición que el escenario; las salpicaduras se salen hacia los lados. */
+  .vk-unzip2__splash {
+    display: block;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 50%;
+    width: min(100%, 960px);
+    width: min(100%, 960px, max(560px, calc((100svh - 160px) * 4 / 3)));
+    aspect-ratio: 4 / 3;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .vk-unzip2__splash::before,
+  .vk-unzip2__splash::after {
+    content: '';
+    position: absolute;
+    aspect-ratio: 808 / 450;
+    background: var(--vk-splash) center / contain no-repeat;
+  }
+  /* Izquierda: espejada, la parte densa junto al envase y las gotas hacia afuera. */
+  .vk-unzip2__splash::before {
+    right: 62%;
+    top: 36%;
+    width: 72%;
+    transform: scaleX(-1);
+  }
+  /* Derecha: como en el envase, más arriba y algo más chica para no ser simétrica. */
+  .vk-unzip2__splash::after {
+    left: 64%;
+    top: 22%;
+    width: 64%;
+  }
+}

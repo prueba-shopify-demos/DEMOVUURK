@@ -105,25 +105,64 @@
           COMPRAR AHORA
         </a>
 
-        <figure class="vk-reveal" style="--vk-delay: 0.26s; margin: 0">
-          <div class="vk-viewer__detail">
-            {%- if section.settings.image_detail != blank -%}
-              {{ section.settings.image_detail | image_url: width: 1200 | image_tag: loading: 'lazy', sizes: '(min-width: 900px) 36vw, 90vw', alt: section.settings.detail_caption }}
-            {%- else -%}
-              <img
-                src="{{ 'vuurk-pack-zipper.webp' | asset_url }}"
-                width="662"
-                height="285"
-                loading="lazy"
-                decoding="async"
-                alt="{{ section.settings.detail_caption | escape }}"
-              >
-            {%- endif -%}
+        <div class="vk-unzip vk-reveal" data-vk-unzip style="--vk-delay: 0.26s">
+          <div class="vk-unzip__head">
+            <span class="vk-unzip__eyebrow">EXPERIENCIA VUURK</span>
+            <h3 class="vk-unzip__title">ABRÍ TU ENERGÍA.</h3>
+            <p>Deslizá para descubrir el producto.</p>
           </div>
-          {%- if section.settings.detail_caption != blank -%}
-            <figcaption class="vk-viewer__caption">{{ section.settings.detail_caption | escape }}</figcaption>
-          {%- endif -%}
-        </figure>
+
+          <div class="vk-unzip__scene">
+            <div class="vk-unzip__layer vk-unzip__layer--closed">
+              <span>CERRADO</span>
+              <img
+                src="{{ 'vuurk-pack-frontal.webp' | asset_url }}"
+                alt="Envase VUURK"
+                width="527"
+                height="574"
+                loading="lazy"
+              >
+            </div>
+
+            <div class="vk-unzip__layer vk-unzip__layer--open">
+              <span>DESCUBRÍ VUURK</span>
+              <img
+                src="{{ 'vuurk-pack-34.webp' | asset_url }}"
+                alt="Otra vista del envase VUURK"
+                width="409"
+                height="569"
+                loading="lazy"
+              >
+            </div>
+
+            <div class="vk-unzip__divider" aria-hidden="true"></div>
+          </div>
+
+          <label class="vk-unzip__label" for="VkUnzip-{{ section.id }}">
+            DESLIZÁ PARA ABRIR
+          </label>
+
+          <input
+            id="VkUnzip-{{ section.id }}"
+            class="vk-unzip__range"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+            step="1"
+            aria-label="Deslizar para descubrir VUURK"
+          >
+
+          <div class="vk-unzip__footer">
+            <button type="button" class="vk-unzip__reset" data-vk-unzip-reset>
+              REINICIAR
+            </button>
+
+            <a href="#comprar" class="vk-unzip__cta" data-vk-unzip-cta hidden>
+              COMPRAR VUURK
+            </a>
+          </div>
+        </div>
 
         {%- if request.design_mode and has_model == false -%}
           <p class="vk-admin-note">

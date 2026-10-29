@@ -143,3 +143,50 @@
   }
   document.addEventListener('shopify:section:load', (event) => init(event.target));
 })();
+
+
+/* VUURK UNZIP EXPERIENCE V1 */
+(() => {
+  const initialize = (root = document) => {
+    const nodes = [];
+
+    if (root.matches?.('[data-vk-unzip]')) nodes.push(root);
+    nodes.push(...root.querySelectorAll('[data-vk-unzip]'));
+
+    nodes.forEach((component) => {
+      if (component.dataset.vkUnzipReady === 'true') return;
+      component.dataset.vkUnzipReady = 'true';
+
+      const range = component.querySelector('.vk-unzip__range');
+      const reset = component.querySelector('[data-vk-unzip-reset]');
+      const cta = component.querySelector('[data-vk-unzip-cta]');
+
+      if (!range || !reset || !cta) return;
+
+      const update = () => {
+        const value = Math.max(0, Math.min(100, Number(range.value) || 0));
+        component.style.setProperty('--vk-unzip-progress', `${value}%`);
+        cta.hidden = value < 95;
+      };
+
+      range.addEventListener('input', update);
+      reset.addEventListener('click', () => {
+        range.value = '0';
+        update();
+        range.focus();
+      });
+
+      update();
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initialize());
+  } else {
+    initialize();
+  }
+
+  document.addEventListener('shopify:section:load', (event) => {
+    initialize(event.target);
+  });
+})();

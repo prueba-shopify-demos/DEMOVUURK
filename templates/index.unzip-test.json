@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "vk_unzip_test": {
+      "type": "vuurk-unzip-player",
+      "settings": {}
+    }
+  },
+  "order": ["vk_unzip_test"]
+}
