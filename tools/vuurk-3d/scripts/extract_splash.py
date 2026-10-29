@@ -22,14 +22,11 @@ import vk_geom as G  # noqa: E402
 # frutos (y > 1060) y por debajo de «Burn clean.» (y < 610), dentro del envase.
 BOX = (92, 610, 900, 1060)
 FEATHER = 220  # px de fundido suave en el borde inferior (corte sobre los frutos)
-# Extremo izquierdo (el que queda junto al envase): el recorte del arte lo cortaba en
-# vertical. Ahora termina en diagonal, como la propia salpicadura (abajo-izquierda →
-# arriba-derecha): arranca en x=TIP_X en la base y retrocede TIP_SLOPE px por px hacia
-# arriba, con un borde de TIP_SOFT px. El borde recto del envase del arte (x < 30)
-# queda fuera y el resto conserva la intensidad original.
-TIP_X = 40
-TIP_SLOPE = 0.25
-TIP_SOFT = 80
+# Extremo izquierdo (el que queda junto al envase): en x < CROP_L el recorte trae el
+# borde recto del envase del arte. Se descarta sin fundidos: en la sección esa franja
+# y algo más quedan siempre detrás del envase, así que la salpicadura sale de detrás
+# del envase con su intensidad completa, sin línea vertical ni zonas apagadas.
+CROP_L = 30
 HUE = (-0.03, 0.16)  # rojo (desde 349°) → naranja → amarillo (58°)
 
 art = G.load_config()['art']
@@ -40,16 +37,14 @@ sp, op = src.load(), out.load()
 for y in range(h):
     t = min(1.0, (h - 1 - y) / FEATHER)
     edge_y = t * t * (3 - 2 * t)  # smoothstep: sin línea de corte visible
-    for x in range(w):
+    for x in range(CROP_L, w):
         r, g, b = sp[x, y]
         hh, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         if hh > 0.5:
             hh -= 1.0
         if not (HUE[0] <= hh <= HUE[1]) or s < 0.35:
             continue
-        u = min(1.0, max(0.0, (x - TIP_X - TIP_SLOPE * (h - 1 - y)) / TIP_SOFT))
-        edge_x = u * u * (3 - 2 * u)
-        a = v * min(1.0, (s - 0.35) / 0.25) * edge_y * edge_x
+        a = v * min(1.0, (s - 0.35) / 0.25) * edge_y
         if a < 0.02:
             continue
         # Color sin el negro de fondo: sobre negro con este alfa da el píxel original.
