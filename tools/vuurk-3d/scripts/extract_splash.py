@@ -22,7 +22,8 @@ import vk_geom as G  # noqa: E402
 # frutos (y > 1060) y por debajo de «Burn clean.» (y < 610), dentro del envase.
 BOX = (92, 610, 900, 1060)
 FEATHER = 220  # px de fundido suave en el borde inferior (corte sobre los frutos)
-FEATHER_L = 160  # y en el izquierdo (borde del envase en el arte)
+FEATHER_L = (48, 300)  # izquierdo: el borde recto del envase en el arte (x < 40) queda
+# totalmente fuera y el fundido es smoothstep, sin arista vertical visible
 HUE = (-0.03, 0.16)  # rojo (desde 349°) → naranja → amarillo (58°)
 
 art = G.load_config()['art']
@@ -34,13 +35,15 @@ for y in range(h):
     t = min(1.0, (h - 1 - y) / FEATHER)
     edge_y = t * t * (3 - 2 * t)  # smoothstep: sin línea de corte visible
     for x in range(w):
+        u = min(1.0, max(0.0, (x - FEATHER_L[0]) / (FEATHER_L[1] - FEATHER_L[0])))
+        edge_x = u * u * (3 - 2 * u)
         r, g, b = sp[x, y]
         hh, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         if hh > 0.5:
             hh -= 1.0
         if not (HUE[0] <= hh <= HUE[1]) or s < 0.35:
             continue
-        a = v * min(1.0, (s - 0.35) / 0.25) * edge_y * min(1.0, x / FEATHER_L)
+        a = v * min(1.0, (s - 0.35) / 0.25) * edge_y * edge_x
         if a < 0.02:
             continue
         # Color sin el negro de fondo: sobre negro con este alfa da el píxel original.
