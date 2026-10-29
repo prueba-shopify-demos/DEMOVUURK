@@ -300,5 +300,8 @@ test('móvil: no descarga ni aplica siluetas', async () => {
   assert.equal(player.drawn, 0);
   assert.ok(fetched.length > 0);
   assert.ok(fetched.every((u) => !u.includes('matte')));
-  assert.ok(ops.every((o) => o.op === 'source-over'));
+  assert.ok(
+    ops.every((o) => o.op === 'source-over' || o.op === 'clear'),
+    'En móvil solo se permite dibujo normal y limpieza del canvas'
+  );
 });

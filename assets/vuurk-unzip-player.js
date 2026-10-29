@@ -413,6 +413,7 @@
         const sw = bmp.width * v.w;
         const sh = bmp.height * v.h;
         const r = coverRect(sw, sh, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.drawImage(bmp, bmp.width * v.x, bmp.height * v.y, sw, sh, r.x, r.y, r.w, r.h);
         const matte = this.mattes.get(index);
         if (matte) this.cutout(matte, bmp.width * v.x, bmp.height * v.y, r.w / sw, r);
